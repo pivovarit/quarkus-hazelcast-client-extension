@@ -1,0 +1,10 @@
+---
+name: "Hazelcast Client"
+metadata:
+  keywords:
+  - "hazelcast-client"
+  - "hazelcast"
+  guide: "https://1.1.1.1" #TODO
+  categories:
+  - "data"
+  status: "unstable"
