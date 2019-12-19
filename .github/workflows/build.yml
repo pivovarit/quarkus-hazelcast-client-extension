@@ -19,6 +19,28 @@ jobs:
         with:
           java-version: ${{ matrix.java }}
           architecture: ${{ matrix.architecture }}
-      - name: Build with Maven
-        run: mvn package
+
+      - name: Build Extension
+        run: mvn install
+
+      - name: Build Test Application
+        run: mvn package -f quarkus-test-app/pom.xml -Pnative -Dnative-image.docker-build=true
+
+      - name: Build the Docker Image
+        run: cd quarkus-test-app && docker build . -f Dockerfile.native -t hazelcast-guides/hazelcast-quarkus-native
+
+      - name: Launch Application with Hazelcast Cluster
+        run: cd quarkus-test-app && docker-compose up -d
+
+      - name: Verify
+        run: |
+          echo "Setting key=key_1&value=value_1"
+          curl -s -X POST "localhost:8081/hazelcast/put?key=key_1&value=value_1" && sleep 1
+
+          echo
+          echo "Retrieving value for key=key_1"
+          readonly result="$(curl "localhost:8080/hazelcast/get?key=key_1" | jq -r .value)"
+          echo "Retrieved key_1 value: [$result]"
+          [[ "$result" = "value_1" ]] || exit 1
+
 
