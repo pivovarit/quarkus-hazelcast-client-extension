@@ -12,4 +12,16 @@ public class HazelcastClientConfig {
      */
     @ConfigItem
     public String clusterAddress;
+
+    /**
+     * Hazelcast Cluster group name
+     */
+    @ConfigItem
+    public String groupName;
+
+    /**
+     * Hazelcast Cluster group password
+     */
+    @ConfigItem
+    public String groupPassword;
 }

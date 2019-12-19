@@ -2,6 +2,7 @@ package io.quarkus.hazelcast.client;
 
 import com.hazelcast.client.HazelcastClient;
 import com.hazelcast.client.config.ClientConfig;
+import com.hazelcast.config.GroupConfig;
 import com.hazelcast.core.HazelcastInstance;
 
 import javax.enterprise.context.ApplicationScoped;
@@ -14,8 +15,12 @@ public class HazelcastClientProducer {
     @Produces
     public HazelcastInstance instance() {
         ClientConfig clientConfig = new ClientConfig();
-        System.out.println("hz_config: " + hazelcastClientConfig.clusterAddress);
+
         clientConfig.getNetworkConfig().addAddress(hazelcastClientConfig.clusterAddress.split(","));
+        if (hazelcastClientConfig.groupName != null) {
+            clientConfig.getGroupConfig().setName(hazelcastClientConfig.groupName);
+        }
+
         return HazelcastClient.newHazelcastClient(clientConfig);
     }
 
