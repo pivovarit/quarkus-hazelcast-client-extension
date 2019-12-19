@@ -2,16 +2,16 @@ package io.quarkus.hazelcast.client;
 
 import com.hazelcast.client.HazelcastClient;
 import com.hazelcast.client.config.ClientConfig;
-import com.hazelcast.config.GroupConfig;
 import com.hazelcast.core.HazelcastInstance;
 
 import javax.annotation.PreDestroy;
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.inject.Produces;
+import java.util.concurrent.atomic.AtomicReference;
 
 @ApplicationScoped
 public class HazelcastClientProducer {
-    private volatile HazelcastInstance instance;
+    private final AtomicReference<HazelcastInstance> instance = new AtomicReference<>(null);
 
     private HazelcastClientConfig hazelcastClientConfig;
 
@@ -23,15 +23,16 @@ public class HazelcastClientProducer {
           .filter(s -> !s.isEmpty())
           .ifPresent(groupName -> clientConfig.getGroupConfig().setName(groupName));
 
-        instance = HazelcastClient.newHazelcastClient(clientConfig);
+        instance.set(HazelcastClient.newHazelcastClient(clientConfig));
 
-        return instance;
+        return instance.get();
     }
 
     @PreDestroy
     public void destroy() {
-        if (instance != null) {
-            instance.shutdown();
+        HazelcastInstance hazelcastInstance = instance.get();
+        if (hazelcastInstance != null) {
+            hazelcastInstance.shutdown();
         }
     }
 
