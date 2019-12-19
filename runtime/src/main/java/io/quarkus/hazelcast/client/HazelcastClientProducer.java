@@ -15,12 +15,7 @@ public class HazelcastClientProducer {
     @Produces
     public HazelcastInstance instance() {
         ClientConfig clientConfig = new ClientConfig();
-
         clientConfig.getNetworkConfig().addAddress(hazelcastClientConfig.clusterAddress.split(","));
-        if (hazelcastClientConfig.groupName != null && !hazelcastClientConfig.groupName.isEmpty()) {
-            clientConfig.getGroupConfig().setName(hazelcastClientConfig.groupName);
-        }
-
         return HazelcastClient.newHazelcastClient(clientConfig);
     }
 
