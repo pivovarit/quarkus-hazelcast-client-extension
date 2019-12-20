@@ -58,4 +58,10 @@ public class HazelcastClientConfig {
      */
     @ConfigItem
     public Optional<Integer> connectionTimeout;
+
+    /**
+     * Executor pool size
+     */
+    @ConfigItem
+    public Optional<Integer> executorPoolSize;
 }

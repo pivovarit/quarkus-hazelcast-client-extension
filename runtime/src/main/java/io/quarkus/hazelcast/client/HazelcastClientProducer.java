@@ -34,7 +34,14 @@ public class HazelcastClientProducer {
         setConnectionAttemptLimit(clientConfig);
         setConnectionAttemptPeriod(clientConfig);
 
+        setExecutorPoolSize(clientConfig);
+
         return clientConfig;
+    }
+
+    private void setExecutorPoolSize(ClientConfig clientConfig) {
+        hazelcastClientConfig.executorPoolSize
+          .ifPresent(clientConfig::setExecutorPoolSize);
     }
 
     private void setClusterAddress(ClientConfig clientConfig) {
