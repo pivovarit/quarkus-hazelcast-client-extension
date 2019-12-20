@@ -48,7 +48,7 @@ public class HazelcastClientProducer {
     }
 
     private void setLabel(ClientConfig clientConfig) {
-        hazelcastClientConfig.groupName
+        hazelcastClientConfig.label
           .filter(s -> !s.isEmpty())
           .ifPresent(clientConfig::addLabel);
     }
