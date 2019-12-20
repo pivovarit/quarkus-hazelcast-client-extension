@@ -42,10 +42,7 @@ public class HazelcastClientProducer {
         hazelcastClientConfig.connectionAttemptLimit
           .ifPresent(attempts -> clientConfig.getNetworkConfig().setConnectionAttemptLimit(attempts));
 
-        hazelcastClientConfig.connectionTimeout
-          .ifPresent(timeout -> clientConfig.getNetworkConfig().setConnectionTimeout(timeout));
-
-        hazelcastClientConfig.connectionTimeout
+        hazelcastClientConfig.connectionAttemptPeriod
           .ifPresent(period -> clientConfig.getNetworkConfig().setConnectionAttemptPeriod(period));
 
         return clientConfig;
