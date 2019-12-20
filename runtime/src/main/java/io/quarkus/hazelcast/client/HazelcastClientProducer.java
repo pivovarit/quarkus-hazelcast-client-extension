@@ -22,30 +22,53 @@ public class HazelcastClientProducer {
     @DefaultBean
     public ClientConfig hazelcastConfigClientInstance() {
         ClientConfig clientConfig = new ClientConfig();
-        clientConfig.getNetworkConfig().addAddress(hazelcastClientConfig.clusterAddress.split(","));
 
+        setClusterAddress(clientConfig);
+        setGroupName(clientConfig);
+        setOutboundPorts(clientConfig);
+        setOutboundPortDefinitions(clientConfig);
+        setConnectionTimeout(clientConfig);
+        setConnectionAttemptLimit(clientConfig);
+        setConnectionAttemptPeriod(clientConfig);
+
+        return clientConfig;
+    }
+
+    private void setClusterAddress(ClientConfig clientConfig) {
+        clientConfig.getNetworkConfig().addAddress(hazelcastClientConfig.clusterAddress.split(","));
+    }
+
+    private void setGroupName(ClientConfig clientConfig) {
         hazelcastClientConfig.groupName
           .filter(s -> !s.isEmpty())
           .ifPresent(groupName -> clientConfig.getGroupConfig().setName(groupName));
+    }
 
-        hazelcastClientConfig.outboundPorts
-          .map(str -> Arrays.stream(str.split(","))).orElseGet(Stream::empty)
-          .forEach(port -> clientConfig.getNetworkConfig().addOutboundPort(Integer.parseInt(port)));
+    private void setConnectionAttemptPeriod(ClientConfig clientConfig) {
+        hazelcastClientConfig.connectionAttemptPeriod
+          .ifPresent(period -> clientConfig.getNetworkConfig().setConnectionAttemptPeriod(period));
+    }
 
+    private void setConnectionAttemptLimit(ClientConfig clientConfig) {
+        hazelcastClientConfig.connectionAttemptLimit
+          .ifPresent(attempts -> clientConfig.getNetworkConfig().setConnectionAttemptLimit(attempts));
+    }
+
+    private void setConnectionTimeout(ClientConfig clientConfig) {
+        hazelcastClientConfig.connectionTimeout
+          .ifPresent(timeout -> clientConfig.getNetworkConfig().setConnectionTimeout(timeout));
+    }
+
+    private void setOutboundPortDefinitions(ClientConfig clientConfig) {
         hazelcastClientConfig.outboundPortDefinitions
           .map(str -> Arrays.stream(str.split(","))).orElseGet(Stream::empty)
           .forEach(definition -> clientConfig.getNetworkConfig().addOutboundPortDefinition(definition));
+    }
 
-        hazelcastClientConfig.connectionTimeout
-          .ifPresent(timeout -> clientConfig.getNetworkConfig().setConnectionTimeout(timeout));
-
-        hazelcastClientConfig.connectionAttemptLimit
-          .ifPresent(attempts -> clientConfig.getNetworkConfig().setConnectionAttemptLimit(attempts));
-
-        hazelcastClientConfig.connectionAttemptPeriod
-          .ifPresent(period -> clientConfig.getNetworkConfig().setConnectionAttemptPeriod(period));
-
-        return clientConfig;
+    private void setOutboundPorts(ClientConfig clientConfig) {
+        hazelcastClientConfig.outboundPorts
+          .map(str -> Arrays.stream(str.split(","))).orElseGet(Stream::empty)
+          .forEach(port -> clientConfig.getNetworkConfig().addOutboundPort(Integer.parseInt(port)));
     }
 
     @Produces
