@@ -19,7 +19,7 @@ public class HazelcastClientConfig {
      * Hazelcast client label name
      */
     @ConfigItem
-    public Optional<String> label;
+    public Optional<String> labels;
 
     /**
      * Hazelcast Cluster group name

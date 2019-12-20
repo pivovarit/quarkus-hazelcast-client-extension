@@ -48,7 +48,7 @@ public class HazelcastClientProducer {
     }
 
     private void setLabels(ClientConfig clientConfig) {
-        hazelcastClientConfig.label
+        hazelcastClientConfig.labels
           .map(s -> Arrays.stream(s.split(","))).orElseGet(Stream::empty)
           .forEach(clientConfig::addLabel);
     }
