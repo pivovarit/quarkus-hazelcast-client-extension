@@ -23,9 +23,9 @@ public class HazelcastClientProducer {
           .filter(s -> !s.isEmpty())
           .ifPresent(groupName -> clientConfig.getGroupConfig().setName(groupName));
 
-        instance.set(HazelcastClient.newHazelcastClient(clientConfig));
-
-        return instance.get();
+        HazelcastInstance instance = HazelcastClient.newHazelcastClient(clientConfig);
+        this.instance.set(instance);
+        return instance;
     }
 
     @PreDestroy
