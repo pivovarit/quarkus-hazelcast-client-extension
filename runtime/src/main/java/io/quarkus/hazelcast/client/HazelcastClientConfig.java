@@ -20,4 +20,18 @@ public class HazelcastClientConfig {
      */
     @ConfigItem
     public Optional<String> groupName;
+
+
+    /**
+     * Outbound port
+     */
+    @ConfigItem
+    public Optional<String> outboundPorts;
+
+
+    /**
+     * Outbound port definition
+     */
+    @ConfigItem
+    public Optional<String> outboundPortDefinitions;
 }

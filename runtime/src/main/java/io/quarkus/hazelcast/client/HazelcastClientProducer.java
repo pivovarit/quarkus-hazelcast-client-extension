@@ -8,7 +8,12 @@ import io.quarkus.arc.DefaultBean;
 import javax.annotation.PreDestroy;
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.inject.Produces;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.stream.Stream;
+
+import static java.util.stream.Collectors.toList;
 
 @ApplicationScoped
 public class HazelcastClientProducer {
@@ -20,10 +25,21 @@ public class HazelcastClientProducer {
     @DefaultBean
     public HazelcastInstance instance() {
         ClientConfig clientConfig = new ClientConfig();
+
         clientConfig.getNetworkConfig().addAddress(hazelcastClientConfig.clusterAddress.split(","));
+
         hazelcastClientConfig.groupName
           .filter(s -> !s.isEmpty())
           .ifPresent(groupName -> clientConfig.getGroupConfig().setName(groupName));
+
+        hazelcastClientConfig.outboundPorts
+          .map(str -> Arrays.stream(str.split(","))).orElseGet(Stream::empty)
+          .map(Integer::valueOf)
+          .forEach(port -> clientConfig.getNetworkConfig().addOutboundPort(port));
+
+        hazelcastClientConfig.outboundPortDefinitions
+          .map(str -> Arrays.stream(str.split(","))).orElseGet(Stream::empty)
+          .forEach(definition -> clientConfig.getNetworkConfig().addOutboundPortDefinition(definition));
 
         HazelcastInstance instance = HazelcastClient.newHazelcastClient(clientConfig);
         this.instance.set(instance);
