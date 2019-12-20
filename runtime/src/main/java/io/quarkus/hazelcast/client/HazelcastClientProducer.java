@@ -18,7 +18,7 @@ public class HazelcastClientProducer {
 
     @Produces
     @DefaultBean
-    public ClientConfig instance() {
+    public ClientConfig hazelcastConfigClientInstance() {
         ClientConfig clientConfig = new ClientConfig();
         clientConfig.getNetworkConfig().addAddress(hazelcastClientConfig.clusterAddress.split(","));
         hazelcastClientConfig.groupName
@@ -30,7 +30,7 @@ public class HazelcastClientProducer {
 
     @Produces
     @DefaultBean
-    public HazelcastInstance instance(ClientConfig config) {
+    public HazelcastInstance hazelcastClientInstance(ClientConfig config) {
         HazelcastInstance instance = HazelcastClient.newHazelcastClient(config);
         this.instance.set(instance);
         return instance;
