@@ -16,6 +16,12 @@ public class HazelcastClientConfig {
     public String clusterAddress;
 
     /**
+     * Hazelcast client label name
+     */
+    @ConfigItem
+    public Optional<String> label;
+
+    /**
      * Hazelcast Cluster group name
      */
     @ConfigItem
