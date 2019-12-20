@@ -18,14 +18,20 @@ public class HazelcastClientProducer {
 
     @Produces
     @DefaultBean
-    public HazelcastInstance instance() {
+    public ClientConfig hazelcastConfigClientInstance() {
         ClientConfig clientConfig = new ClientConfig();
         clientConfig.getNetworkConfig().addAddress(hazelcastClientConfig.clusterAddress.split(","));
         hazelcastClientConfig.groupName
           .filter(s -> !s.isEmpty())
           .ifPresent(groupName -> clientConfig.getGroupConfig().setName(groupName));
 
-        HazelcastInstance instance = HazelcastClient.newHazelcastClient(clientConfig);
+        return clientConfig;
+    }
+
+    @Produces
+    @DefaultBean
+    public HazelcastInstance hazelcastClientInstance(ClientConfig config) {
+        HazelcastInstance instance = HazelcastClient.newHazelcastClient(config);
         this.instance.set(instance);
         return instance;
     }
