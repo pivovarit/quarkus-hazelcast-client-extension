@@ -5,5 +5,5 @@ import io.quarkus.builder.item.SimpleBuildItem;
 /**
  * Marker build item indicating that Hazelcast client is configured
  */
-public final class HazelcastClientConfiguredBuildItem extends SimpleBuildItem {
+final class HazelcastClientConfiguredBuildItem extends SimpleBuildItem {
 }
