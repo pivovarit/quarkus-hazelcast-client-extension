@@ -34,8 +34,7 @@ public class HazelcastClientProducer {
 
         hazelcastClientConfig.outboundPorts
           .map(str -> Arrays.stream(str.split(","))).orElseGet(Stream::empty)
-          .map(Integer::valueOf)
-          .forEach(port -> clientConfig.getNetworkConfig().addOutboundPort(port));
+          .forEach(port -> clientConfig.getNetworkConfig().addOutboundPort(Integer.parseInt(port)));
 
         hazelcastClientConfig.outboundPortDefinitions
           .map(str -> Arrays.stream(str.split(","))).orElseGet(Stream::empty)
