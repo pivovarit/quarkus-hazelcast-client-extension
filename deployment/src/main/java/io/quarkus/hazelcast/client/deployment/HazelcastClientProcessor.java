@@ -26,9 +26,10 @@ class HazelcastClientProcessor {
 
     @Record(ExecutionTime.RUNTIME_INIT)
     @BuildStep
-    void configureRuntimeProperties(
+    HazelcastClientConfiguredBuildItem configureRuntimeProperties(
       HazelcastRecorder recorder,
       HazelcastClientConfig config) {
         recorder.configureRuntimeProperties(config);
+        return new HazelcastClientConfiguredBuildItem();
     }
 }
