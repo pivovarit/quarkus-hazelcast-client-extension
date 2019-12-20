@@ -34,4 +34,22 @@ public class HazelcastClientConfig {
      */
     @ConfigItem
     public Optional<String> outboundPortDefinitions;
+
+    /**
+     * Connection attempt limit
+     */
+    @ConfigItem
+    public Optional<String> connectionAttemptLimit;
+
+    /**
+     * Connection attempt period
+     */
+    @ConfigItem
+    public Optional<String> connectionAttemptPeriod;
+
+    /**
+     * Connection timeout
+     */
+    @ConfigItem
+    public Optional<String> connectionTimeout;
 }
