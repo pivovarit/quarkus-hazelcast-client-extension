@@ -9,11 +9,8 @@ import javax.annotation.PreDestroy;
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.inject.Produces;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Stream;
-
-import static java.util.stream.Collectors.toList;
 
 @ApplicationScoped
 public class HazelcastClientProducer {
@@ -23,9 +20,8 @@ public class HazelcastClientProducer {
 
     @Produces
     @DefaultBean
-    public HazelcastInstance instance() {
+    public ClientConfig hazelcastConfigClientInstance() {
         ClientConfig clientConfig = new ClientConfig();
-
         clientConfig.getNetworkConfig().addAddress(hazelcastClientConfig.clusterAddress.split(","));
 
         hazelcastClientConfig.groupName
@@ -40,7 +36,13 @@ public class HazelcastClientProducer {
           .map(str -> Arrays.stream(str.split(","))).orElseGet(Stream::empty)
           .forEach(definition -> clientConfig.getNetworkConfig().addOutboundPortDefinition(definition));
 
-        HazelcastInstance instance = HazelcastClient.newHazelcastClient(clientConfig);
+        return clientConfig;
+    }
+
+    @Produces
+    @DefaultBean
+    public HazelcastInstance hazelcastClientInstance(ClientConfig config) {
+        HazelcastInstance instance = HazelcastClient.newHazelcastClient(config);
         this.instance.set(instance);
         return instance;
     }
