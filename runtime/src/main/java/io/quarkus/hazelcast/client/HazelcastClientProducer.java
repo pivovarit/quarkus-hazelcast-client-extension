@@ -25,7 +25,7 @@ public class HazelcastClientProducer {
 
         setClusterAddress(clientConfig);
         setGroupName(clientConfig);
-        setLabel(clientConfig);
+        setLabels(clientConfig);
 
         setOutboundPorts(clientConfig);
         setOutboundPortDefinitions(clientConfig);
@@ -47,10 +47,10 @@ public class HazelcastClientProducer {
           .ifPresent(groupName -> clientConfig.getGroupConfig().setName(groupName));
     }
 
-    private void setLabel(ClientConfig clientConfig) {
+    private void setLabels(ClientConfig clientConfig) {
         hazelcastClientConfig.label
-          .filter(s -> !s.isEmpty())
-          .ifPresent(clientConfig::addLabel);
+          .map(s -> Arrays.stream(s.split(","))).orElseGet(Stream::empty)
+          .forEach(clientConfig::addLabel);
     }
 
     private void setConnectionAttemptPeriod(ClientConfig clientConfig) {
