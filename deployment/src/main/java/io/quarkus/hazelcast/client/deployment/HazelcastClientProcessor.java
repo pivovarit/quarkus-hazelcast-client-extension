@@ -19,7 +19,7 @@ class HazelcastClientProcessor {
         return new FeatureBuildItem(FEATURE);
     }
 
-    @BuildStep(loadsApplicationClasses = true)
+    @BuildStep
     void setup(BuildProducer<AdditionalBeanBuildItem> additionalBeans) {
         additionalBeans.produce(AdditionalBeanBuildItem.unremovableOf(HazelcastClientProducer.class));
     }
