@@ -39,7 +39,7 @@ public class HazelcastClientConfig {
      * Connection attempt limit
      */
     @ConfigItem
-    public Optional<String> connectionAttemptLimit;
+    public Optional<Integer> connectionAttemptLimit;
 
     /**
      * Connection attempt period
@@ -51,5 +51,5 @@ public class HazelcastClientConfig {
      * Connection timeout
      */
     @ConfigItem
-    public Optional<String> connectionTimeout;
+    public Optional<Integer> connectionTimeout;
 }

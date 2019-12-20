@@ -36,6 +36,18 @@ public class HazelcastClientProducer {
           .map(str -> Arrays.stream(str.split(","))).orElseGet(Stream::empty)
           .forEach(definition -> clientConfig.getNetworkConfig().addOutboundPortDefinition(definition));
 
+        hazelcastClientConfig.connectionTimeout
+          .ifPresent(timeout -> clientConfig.getNetworkConfig().setConnectionTimeout(timeout));
+
+        hazelcastClientConfig.connectionAttemptLimit
+          .ifPresent(attempts -> clientConfig.getNetworkConfig().setConnectionAttemptLimit(attempts));
+
+        hazelcastClientConfig.connectionTimeout
+          .ifPresent(timeout -> clientConfig.getNetworkConfig().setConnectionTimeout(timeout));
+
+        hazelcastClientConfig.connectionTimeout
+          .ifPresent(period -> clientConfig.getNetworkConfig().setConnectionAttemptPeriod(period));
+
         return clientConfig;
     }
 
