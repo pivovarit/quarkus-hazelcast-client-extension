@@ -16,6 +16,12 @@ public class HazelcastClientConfig {
     public String clusterAddress;
 
     /**
+     * Hazelcast client label name
+     */
+    @ConfigItem
+    public Optional<String> labels;
+
+    /**
      * Hazelcast Cluster group name
      */
     @ConfigItem
@@ -52,4 +58,10 @@ public class HazelcastClientConfig {
      */
     @ConfigItem
     public Optional<Integer> connectionTimeout;
+
+    /**
+     * Executor pool size
+     */
+    @ConfigItem
+    public Optional<Integer> executorPoolSize;
 }
