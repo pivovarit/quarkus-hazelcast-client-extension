@@ -11,6 +11,7 @@ jobs:
       matrix:
         java: [ '11' ]
         architecture: [ 'x64' ]
+
     name: Build with JDK ${{ matrix.java }} on ${{ matrix.architecture }}
     steps:
       - uses: actions/checkout@v1
@@ -19,6 +20,13 @@ jobs:
         with:
           java-version: ${{ matrix.java }}
           architecture: ${{ matrix.architecture }}
+
+      - uses: actions/cache@v1
+        with:
+          path: ~/.m2/repository
+          key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
+          restore-keys: |
+            ${{ runner.os }}-maven-
 
       - name: Build Extension
         run: mvn install
