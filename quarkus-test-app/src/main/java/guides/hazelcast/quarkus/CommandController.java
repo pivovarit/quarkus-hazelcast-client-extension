@@ -23,7 +23,7 @@ public class CommandController {
     @Inject
     HazelcastInstance hazelcastInstance;
 
-    private ConcurrentMap<String, DataSerializableAddress> retrieveMap() {
+    private ConcurrentMap<String, DataSerializableWrapper> retrieveMap() {
         return hazelcastInstance.getMap("map");
     }
 
@@ -31,9 +31,9 @@ public class CommandController {
     @Path("/put")
     @Produces(MediaType.APPLICATION_JSON)
     public CommandResponse put(@QueryParam("key") String key, @QueryParam("value") String value) {
-        DataSerializableAddress dataSerializableAddress = new DataSerializableAddress();
-        dataSerializableAddress.setCity("San Mateo");
-        retrieveMap().put(key, dataSerializableAddress);
+        DataSerializableWrapper dataSerializableWrapper = new DataSerializableWrapper();
+        dataSerializableWrapper.setValue(value);
+        retrieveMap().put(key, dataSerializableWrapper);
         return new CommandResponse(value, containerName);
     }
 
@@ -41,7 +41,7 @@ public class CommandController {
     @Path("/get")
     @Produces(MediaType.APPLICATION_JSON)
     public CommandResponse get(@QueryParam("key") String key) {
-        DataSerializableAddress value = retrieveMap().get(key);
-        return new CommandResponse(value.getCity(), containerName);
+        DataSerializableWrapper value = retrieveMap().get(key);
+        return new CommandResponse(value.getValue(), containerName);
     }
 }
