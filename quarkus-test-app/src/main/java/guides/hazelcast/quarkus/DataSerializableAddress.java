@@ -31,6 +31,10 @@ public class DataSerializableAddress implements com.hazelcast.nio.serialization.
         this.state = state;
     }
 
+    public String getCity() {
+        return city;
+    }
+
     @Override
     public void readData(ObjectDataInput in) throws IOException {
         street = in.readUTF();
