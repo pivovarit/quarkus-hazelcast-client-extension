@@ -1,22 +1,47 @@
 package io.quarkus.hazelcast.client.deployment;
 
+import com.hazelcast.nio.serialization.DataSerializable;
 import io.quarkus.arc.deployment.AdditionalBeanBuildItem;
 import io.quarkus.deployment.annotations.BuildProducer;
 import io.quarkus.deployment.annotations.BuildStep;
 import io.quarkus.deployment.annotations.ExecutionTime;
 import io.quarkus.deployment.annotations.Record;
+import io.quarkus.deployment.builditem.CombinedIndexBuildItem;
 import io.quarkus.deployment.builditem.FeatureBuildItem;
+import io.quarkus.deployment.builditem.nativeimage.ReflectiveClassBuildItem;
+import io.quarkus.deployment.builditem.nativeimage.ReflectiveHierarchyBuildItem;
 import io.quarkus.hazelcast.client.HazelcastClientConfig;
 import io.quarkus.hazelcast.client.HazelcastClientProducer;
 import io.quarkus.hazelcast.client.HazelcastRecorder;
+import org.jboss.jandex.ClassInfo;
+import org.jboss.jandex.DotName;
+import org.jboss.jandex.IndexView;
+import org.jboss.jandex.Type;
+
+import javax.inject.Inject;
 
 class HazelcastClientProcessor {
 
     private static final String FEATURE = "hazelcast-client";
 
+    @Inject
+    CombinedIndexBuildItem combinedIndexBuildItem;
+
+    @Inject
+    BuildProducer<ReflectiveHierarchyBuildItem> reflectiveHierarchyClass;
+
     @BuildStep
     FeatureBuildItem feature() {
         return new FeatureBuildItem(FEATURE);
+    }
+
+    @BuildStep
+    void registerDataSerializableClasses() {
+        IndexView index = combinedIndexBuildItem.getIndex();
+
+        for (ClassInfo ci : index.getAllKnownImplementors(DotName.createSimple(DataSerializable.class.getName()))) {
+            reflectiveHierarchyClass.produce(new ReflectiveHierarchyBuildItem(Type.create(ci.name(), Type.Kind.CLASS)));
+        }
     }
 
     @BuildStep
