@@ -24,19 +24,15 @@ class HazelcastClientProcessor {
 
     private static final String FEATURE = "hazelcast-client";
 
-    @Inject
-    CombinedIndexBuildItem combinedIndexBuildItem;
-
-    @Inject
-    BuildProducer<ReflectiveHierarchyBuildItem> reflectiveHierarchyClass;
-
     @BuildStep
     FeatureBuildItem feature() {
         return new FeatureBuildItem(FEATURE);
     }
 
     @BuildStep
-    void registerDataSerializableClasses() {
+    void registerDataSerializableClasses(
+      CombinedIndexBuildItem combinedIndexBuildItem,
+      BuildProducer<ReflectiveHierarchyBuildItem> reflectiveHierarchyClass) {
         IndexView index = combinedIndexBuildItem.getIndex();
 
         for (ClassInfo ci : index.getAllKnownImplementors(DotName.createSimple(DataSerializable.class.getName()))) {
