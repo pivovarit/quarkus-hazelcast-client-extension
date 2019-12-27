@@ -4,7 +4,7 @@
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.hazelcast</groupId>
-    <artifactId>hazelcast-quarkus-guide-yaml</artifactId>
+    <artifactId>hazelcast-quarkus-guide-xml</artifactId>
     <version>1.0-SNAPSHOT</version>
 
     <properties>
