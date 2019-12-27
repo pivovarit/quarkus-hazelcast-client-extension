@@ -1,4 +1,4 @@
-name: build
+name: build-xml
 on:
   push:
     paths-ignore:
