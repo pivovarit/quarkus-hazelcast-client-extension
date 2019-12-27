@@ -12,7 +12,7 @@ public class HazelcastClientConfig {
     /**
      * Hazelcast Cluster address
      */
-    @ConfigItem
+    @ConfigItem(defaultValue = "http://localhost:5701")
     public String clusterAddress;
 
     /**
