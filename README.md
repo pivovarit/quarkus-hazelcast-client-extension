@@ -7,3 +7,4 @@
 
 ## Limitations
 - Default serialization is not supported in native mode
+- Configuration via `hazelcast.xml` is not fully supported
