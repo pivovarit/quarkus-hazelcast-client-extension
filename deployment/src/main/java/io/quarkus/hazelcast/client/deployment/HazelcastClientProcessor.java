@@ -1,5 +1,8 @@
 package io.quarkus.hazelcast.client.deployment;
 
+import com.hazelcast.client.cache.impl.HazelcastClientCachingProvider;
+import com.hazelcast.config.EventJournalConfig;
+import com.hazelcast.config.MerkleTreeConfig;
 import com.hazelcast.nio.serialization.DataSerializable;
 import io.quarkus.arc.deployment.AdditionalBeanBuildItem;
 import io.quarkus.deployment.annotations.BuildProducer;
@@ -27,6 +30,13 @@ class HazelcastClientProcessor {
     @BuildStep
     FeatureBuildItem feature() {
         return new FeatureBuildItem(FEATURE);
+    }
+
+    @BuildStep
+    void registerConfigClasses(BuildProducer<ReflectiveClassBuildItem> reflectiveClass) {
+        reflectiveClass.produce(new ReflectiveClassBuildItem(true, false, false, EventJournalConfig.class));
+        reflectiveClass.produce(new ReflectiveClassBuildItem(true, false, false, MerkleTreeConfig.class));
+        reflectiveClass.produce(new ReflectiveClassBuildItem(true, true, true, HazelcastClientCachingProvider.class));
     }
 
     @BuildStep
