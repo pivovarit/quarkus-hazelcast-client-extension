@@ -15,7 +15,6 @@
         <module>runtime</module>
         <module>test/quarkus-test-app</module>
         <module>test/quarkus-test-app-yaml</module>
-        <module>test/quarkus-test-app-xml</module>
     </modules>
 
     <properties>
