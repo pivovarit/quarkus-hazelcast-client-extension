@@ -32,13 +32,13 @@ jobs:
         run: mvn install
 
       - name: Build Test Application
-        run: mvn package && mvn clean package -f quarkus-test-app/pom.xml -Pnative -Dnative-image.docker-build=true
+        run: mvn package && mvn clean package -f test/quarkus-test-app/pom.xml -Pnative -Dnative-image.docker-build=true
 
       - name: Build the Docker Image
-        run: cd quarkus-test-app && docker build . -f Dockerfile.native -t hazelcast-guides/hazelcast-quarkus-native
+        run: cd test/quarkus-test-app && docker build . -f Dockerfile.native -t hazelcast-guides/hazelcast-quarkus-native
 
       - name: Launch Application with Hazelcast Cluster
-        run: cd quarkus-test-app && docker-compose up -d
+        run: cd test/quarkus-test-app && docker-compose up -d
 
       - name: Verify
         run: |
