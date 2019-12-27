@@ -8,6 +8,7 @@ import io.quarkus.arc.DefaultBean;
 import javax.annotation.PreDestroy;
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.inject.Produces;
+import javax.inject.Singleton;
 import java.util.Arrays;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Stream;
@@ -19,8 +20,10 @@ public class HazelcastClientProducer {
     private HazelcastClientConfig hazelcastClientConfig;
 
     @Produces
+    @Singleton
     @DefaultBean
     public ClientConfig hazelcastConfigClientInstance() {
+
         ClientConfig clientConfig = new ClientConfig();
 
         setClusterAddress(clientConfig);
@@ -88,6 +91,7 @@ public class HazelcastClientProducer {
     }
 
     @Produces
+    @Singleton
     @DefaultBean
     public HazelcastInstance hazelcastClientInstance(ClientConfig config) {
         HazelcastInstance instance = HazelcastClient.newHazelcastClient(config);
