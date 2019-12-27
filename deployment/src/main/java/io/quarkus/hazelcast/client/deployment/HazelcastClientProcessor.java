@@ -1,6 +1,5 @@
 package io.quarkus.hazelcast.client.deployment;
 
-import com.hazelcast.client.cache.impl.HazelcastClientCachingProvider;
 import com.hazelcast.config.EventJournalConfig;
 import com.hazelcast.config.MerkleTreeConfig;
 import com.hazelcast.nio.serialization.DataSerializable;
@@ -20,8 +19,6 @@ import org.jboss.jandex.ClassInfo;
 import org.jboss.jandex.DotName;
 import org.jboss.jandex.IndexView;
 import org.jboss.jandex.Type;
-
-import javax.inject.Inject;
 
 class HazelcastClientProcessor {
 
