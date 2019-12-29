@@ -44,10 +44,12 @@ class HazelcastClientProcessor {
           "com.sun.xml.bind.v2.ContextFactory",
           "com.sun.xml.internal.bind.v2.ContextFactory",
           "com.sun.org.apache.xpath.internal.functions.FuncNot",
+          "com.sun.org.apache.xerces.internal.impl.dv.xs.SchemaDVFactoryImpl",
           "com.sun.xml.internal.stream.XMLInputFactoryImpl"));
 
-        resources.produce(new NativeImageResourceBuildItem("output_xml.properties"));
+        resources.produce(new NativeImageResourceBuildItem("com/sun/org/apache/xml/internal/serializer/output_xml.properties"));
         bundles.produce(new NativeImageResourceBundleBuildItem("com.sun.org.apache.xml.internal.serializer.utils.SerializerMessages"));
+        bundles.produce(new NativeImageResourceBundleBuildItem("com.sun.org.apache.xerces.internal.impl.msg.XMLSchemaMessages"));
     }
 
     @BuildStep
