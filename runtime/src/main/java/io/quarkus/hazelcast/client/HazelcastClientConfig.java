@@ -16,6 +16,12 @@ public class HazelcastClientConfig {
     public String clusterMembers;
 
     /**
+     * Hazelcast Client config source
+     */
+    @ConfigItem
+    public Optional<String> configSource;
+
+    /**
      * Hazelcast client label name
      */
     @ConfigItem
