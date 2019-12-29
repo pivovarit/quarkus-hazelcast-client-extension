@@ -14,6 +14,7 @@ import javax.inject.Singleton;
 import java.util.Arrays;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Function;
+import java.util.function.Supplier;
 import java.util.stream.Stream;
 
 @ApplicationScoped
@@ -28,24 +29,28 @@ public class HazelcastClientProducer {
     public ClientConfig hazelcastConfigClientInstance() {
         return hazelcastClientConfig.configSource
           .map(toHazelcastClientConfig())
-          .orElseGet(() -> {
-              ClientConfig clientConfig = new ClientConfig();
+          .orElseGet(fromApplicationProperties());
+    }
 
-              setClusterAddress(clientConfig);
-              setGroupName(clientConfig);
-              setLabels(clientConfig);
+    private Supplier<ClientConfig> fromApplicationProperties() {
+        return () -> {
+            ClientConfig clientConfig = new ClientConfig();
 
-              setOutboundPorts(clientConfig);
-              setOutboundPortDefinitions(clientConfig);
+            setClusterAddress(clientConfig);
+            setGroupName(clientConfig);
+            setLabels(clientConfig);
 
-              setConnectionTimeout(clientConfig);
-              setConnectionAttemptLimit(clientConfig);
-              setConnectionAttemptPeriod(clientConfig);
+            setOutboundPorts(clientConfig);
+            setOutboundPortDefinitions(clientConfig);
 
-              setExecutorPoolSize(clientConfig);
+            setConnectionTimeout(clientConfig);
+            setConnectionAttemptLimit(clientConfig);
+            setConnectionAttemptPeriod(clientConfig);
 
-              return clientConfig;
-          });
+            setExecutorPoolSize(clientConfig);
+
+            return clientConfig;
+        };
     }
 
     @Produces
