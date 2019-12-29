@@ -1,6 +1,8 @@
 package io.quarkus.hazelcast.client;
 
 import com.hazelcast.client.HazelcastClient;
+import com.hazelcast.client.config.ClientClasspathXmlConfig;
+import com.hazelcast.client.config.ClientClasspathYamlConfig;
 import com.hazelcast.client.config.ClientConfig;
 import com.hazelcast.core.HazelcastInstance;
 import io.quarkus.arc.DefaultBean;
@@ -11,6 +13,7 @@ import javax.enterprise.inject.Produces;
 import javax.inject.Singleton;
 import java.util.Arrays;
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.function.Function;
 import java.util.stream.Stream;
 
 @ApplicationScoped
@@ -23,23 +26,48 @@ public class HazelcastClientProducer {
     @Singleton
     @DefaultBean
     public ClientConfig hazelcastConfigClientInstance() {
+        return hazelcastClientConfig.configSource
+          .map(toHazelcastClientConfig())
+          .orElseGet(() -> {
+              ClientConfig clientConfig = new ClientConfig();
 
-        ClientConfig clientConfig = new ClientConfig();
+              setClusterAddress(clientConfig);
+              setGroupName(clientConfig);
+              setLabels(clientConfig);
 
-        setClusterAddress(clientConfig);
-        setGroupName(clientConfig);
-        setLabels(clientConfig);
+              setOutboundPorts(clientConfig);
+              setOutboundPortDefinitions(clientConfig);
 
-        setOutboundPorts(clientConfig);
-        setOutboundPortDefinitions(clientConfig);
+              setConnectionTimeout(clientConfig);
+              setConnectionAttemptLimit(clientConfig);
+              setConnectionAttemptPeriod(clientConfig);
 
-        setConnectionTimeout(clientConfig);
-        setConnectionAttemptLimit(clientConfig);
-        setConnectionAttemptPeriod(clientConfig);
+              setExecutorPoolSize(clientConfig);
 
-        setExecutorPoolSize(clientConfig);
+              return clientConfig;
+          });
+    }
 
-        return clientConfig;
+    @Produces
+    @Singleton
+    @DefaultBean
+    public HazelcastInstance hazelcastClientInstance(ClientConfig config) {
+        HazelcastInstance instance = HazelcastClient.newHazelcastClient(config);
+        this.instance.set(instance);
+        return instance;
+    }
+
+    private static Function<String, ClientConfig> toHazelcastClientConfig() {
+        return source -> {
+            switch (source) {
+                case "yaml":
+                    return new ClientClasspathYamlConfig("hazelcast.yml");
+                case "xml":
+                    return new ClientClasspathXmlConfig("hazelcast.xml");
+                default:
+                    throw new IllegalStateException(String.format("Config source: [%s] is not supported", source));
+            }
+        };
     }
 
     private void setExecutorPoolSize(ClientConfig clientConfig) {
@@ -88,15 +116,6 @@ public class HazelcastClientProducer {
         hazelcastClientConfig.outboundPorts
           .map(str -> Arrays.stream(str.split(","))).orElseGet(Stream::empty)
           .forEach(port -> clientConfig.getNetworkConfig().addOutboundPort(Integer.parseInt(port)));
-    }
-
-    @Produces
-    @Singleton
-    @DefaultBean
-    public HazelcastInstance hazelcastClientInstance(ClientConfig config) {
-        HazelcastInstance instance = HazelcastClient.newHazelcastClient(config);
-        this.instance.set(instance);
-        return instance;
     }
 
     @PreDestroy

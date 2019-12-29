@@ -46,8 +46,8 @@ class HazelcastClientProcessor {
           "com.sun.org.apache.xpath.internal.functions.FuncNot",
           "com.sun.xml.internal.stream.XMLInputFactoryImpl"));
 
-        bundles.produce(new NativeImageResourceBundleBuildItem("com.sun.org.apache.xml.internal.serializer.utils.SerializerMessages"));
         resources.produce(new NativeImageResourceBuildItem("output_xml.properties"));
+        bundles.produce(new NativeImageResourceBundleBuildItem("com.sun.org.apache.xml.internal.serializer.utils.SerializerMessages"));
     }
 
     @BuildStep

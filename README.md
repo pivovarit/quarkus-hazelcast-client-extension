@@ -7,12 +7,15 @@
 
 ### Configuration using `hazelcast.yml`
 
-In order to configure client using the `hazelcast.yml` file, place the configuration file in `src/main/resources` and wire up the following bean:
+In order to configure client using the `hazelcast.yml` file, place the configuration file in `src/main/resources` and add the following Quarkus configuration entry:
 
-    @Produces
-    ClientConfig createInstance() {
-        return new ClientClasspathYamlConfig("hazelcast.yml");
-    }
+    quarkus.hazelcast-client.config-source=yaml
+    
+### Configuration using `hazelcast.xml` (not supported in native mode)
+
+In order to configure client using the `hazelcast.xml` file, place the configuration file in `src/main/resources` and add the following Quarkus configuration entry:
+
+    quarkus.hazelcast-client.config-source=xml
     
 Configuration entries from `hazelcast.yml` will override all `quarkus.hazelcast-client.*` entries.
 
