@@ -31,6 +31,19 @@ class HazelcastClientProcessor {
     }
 
     @BuildStep
+    void registerXmlParsingClasses(BuildProducer<ReflectiveClassBuildItem> reflectiveClass) {
+        reflectiveClass.produce(new ReflectiveClassBuildItem(false, false,
+          "com.sun.org.apache.xerces.internal.jaxp.DocumentBuilderFactoryImpl",
+          "com.sun.org.apache.xerces.internal.jaxp.datatype.DatatypeFactoryImpl",
+          "com.sun.org.apache.xalan.internal.xsltc.trax.TransformerFactoryImpl",
+          "com.sun.org.apache.xerces.internal.jaxp.SAXParserFactoryImpl",
+          "com.sun.xml.bind.v2.ContextFactory",
+          "com.sun.xml.internal.bind.v2.ContextFactory",
+          "com.sun.org.apache.xpath.internal.functions.FuncNot",
+          "com.sun.xml.internal.stream.XMLInputFactoryImpl"));
+    }
+
+    @BuildStep
     void registerConfigClasses(BuildProducer<ReflectiveClassBuildItem> reflectiveClass) {
         reflectiveClass.produce(new ReflectiveClassBuildItem(true, false, false, EventJournalConfig.class));
         reflectiveClass.produce(new ReflectiveClassBuildItem(true, false, false, MerkleTreeConfig.class));

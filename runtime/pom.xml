@@ -20,9 +20,9 @@
             <version>${quarkus.version}</version>
         </dependency>
         <dependency>
-            <groupId>io.quarkus</groupId>
-            <artifactId>quarkus-jaxb</artifactId>
-            <version>${quarkus.version}</version>
+            <groupId>com.sun.org.apache</groupId>
+            <artifactId>jaxp-ri</artifactId>
+            <version>1.4</version>
         </dependency>
         <dependency>
             <groupId>io.quarkus</groupId>
