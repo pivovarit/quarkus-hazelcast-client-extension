@@ -11,6 +11,7 @@ import io.quarkus.deployment.annotations.Record;
 import io.quarkus.deployment.builditem.CombinedIndexBuildItem;
 import io.quarkus.deployment.builditem.FeatureBuildItem;
 import io.quarkus.deployment.builditem.nativeimage.NativeImageResourceBuildItem;
+import io.quarkus.deployment.builditem.nativeimage.NativeImageResourceBundleBuildItem;
 import io.quarkus.deployment.builditem.nativeimage.ReflectiveClassBuildItem;
 import io.quarkus.deployment.builditem.nativeimage.ReflectiveHierarchyBuildItem;
 import io.quarkus.hazelcast.client.HazelcastClientConfig;
@@ -28,6 +29,25 @@ class HazelcastClientProcessor {
     @BuildStep
     FeatureBuildItem feature() {
         return new FeatureBuildItem(FEATURE);
+    }
+
+    @BuildStep
+    void registerXmlParsingClasses(
+      BuildProducer<ReflectiveClassBuildItem> reflectiveClass,
+      BuildProducer<NativeImageResourceBundleBuildItem> bundles,
+      BuildProducer<NativeImageResourceBuildItem> resources) {
+        reflectiveClass.produce(new ReflectiveClassBuildItem(false, false,
+          "com.sun.org.apache.xerces.internal.jaxp.DocumentBuilderFactoryImpl",
+          "com.sun.org.apache.xerces.internal.jaxp.datatype.DatatypeFactoryImpl",
+          "com.sun.org.apache.xalan.internal.xsltc.trax.TransformerFactoryImpl",
+          "com.sun.org.apache.xerces.internal.jaxp.SAXParserFactoryImpl",
+          "com.sun.xml.bind.v2.ContextFactory",
+          "com.sun.xml.internal.bind.v2.ContextFactory",
+          "com.sun.org.apache.xpath.internal.functions.FuncNot",
+          "com.sun.xml.internal.stream.XMLInputFactoryImpl"));
+
+        resources.produce(new NativeImageResourceBuildItem("output_xml.properties"));
+        bundles.produce(new NativeImageResourceBundleBuildItem("com.sun.org.apache.xml.internal.serializer.utils.SerializerMessages"));
     }
 
     @BuildStep
