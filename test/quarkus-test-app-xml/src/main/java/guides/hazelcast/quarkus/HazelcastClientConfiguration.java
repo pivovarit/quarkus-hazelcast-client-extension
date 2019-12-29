@@ -1,6 +1,6 @@
 package guides.hazelcast.quarkus;
 
-import com.hazelcast.client.config.ClientClasspathYamlConfig;
+import com.hazelcast.client.config.ClientClasspathXmlConfig;
 import com.hazelcast.client.config.ClientConfig;
 
 import javax.enterprise.context.ApplicationScoped;
@@ -11,6 +11,6 @@ public class HazelcastClientConfiguration {
 
     @Produces
     ClientConfig createInstance() {
-        return new ClientClasspathYamlConfig("hazelcast.yml");
+        return new ClientClasspathXmlConfig("hazelcast.xml");
     }
 }
