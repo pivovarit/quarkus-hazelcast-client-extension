@@ -48,7 +48,7 @@ public class HazelcastClientProducer {
     }
 
     private void setClusterAddress(ClientConfig clientConfig) {
-        clientConfig.getNetworkConfig().addAddress(hazelcastClientConfig.clusterAddress.split(","));
+        clientConfig.getNetworkConfig().addAddress(hazelcastClientConfig.clusterMembers.split(","));
     }
 
     private void setGroupName(ClientConfig clientConfig) {

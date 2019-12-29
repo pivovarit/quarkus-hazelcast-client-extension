@@ -13,7 +13,7 @@ public class HazelcastClientConfig {
      * Hazelcast Cluster address
      */
     @ConfigItem(defaultValue = "http://localhost:5701")
-    public String clusterAddress;
+    public String clusterMembers;
 
     /**
      * Hazelcast client label name
