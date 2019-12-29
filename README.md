@@ -5,6 +5,17 @@
 ## Features
 - Lazy init for client (TODO)
 
+### Configuration using `hazelcast.yml`
+
+In order to configure client using the `hazelcast.yml` file, configure a following bean:
+
+    @Produces
+    ClientConfig createInstance() {
+        return new ClientClasspathYamlConfig("hazelcast.yml");
+    }
+    
+Configuration entries from `hazelcast.yml` will override `quarkus.hazelcast-client.*` entries.
+
 ## Limitations
 - Default serialization is not supported in native mode
 - Configuration via `hazelcast.xml` is not fully supported
