@@ -32,7 +32,10 @@ class HazelcastClientProcessor {
     }
 
     @BuildStep
-    void registerXmlParsingClasses(BuildProducer<ReflectiveClassBuildItem> reflectiveClass, BuildProducer<NativeImageResourceBundleBuildItem> bundle) {
+    void registerXmlParsingClasses(
+      BuildProducer<ReflectiveClassBuildItem> reflectiveClass,
+      BuildProducer<NativeImageResourceBundleBuildItem> bundles,
+      BuildProducer<NativeImageResourceBuildItem> resources) {
         reflectiveClass.produce(new ReflectiveClassBuildItem(false, false,
           "com.sun.org.apache.xerces.internal.jaxp.DocumentBuilderFactoryImpl",
           "com.sun.org.apache.xerces.internal.jaxp.datatype.DatatypeFactoryImpl",
@@ -42,7 +45,9 @@ class HazelcastClientProcessor {
           "com.sun.xml.internal.bind.v2.ContextFactory",
           "com.sun.org.apache.xpath.internal.functions.FuncNot",
           "com.sun.xml.internal.stream.XMLInputFactoryImpl"));
-        bundle.produce(new NativeImageResourceBundleBuildItem("com.sun.org.apache.xml.internal.serializer.utils.SerializerMessages"));
+
+        bundles.produce(new NativeImageResourceBundleBuildItem("com.sun.org.apache.xml.internal.serializer.utils.SerializerMessages"));
+        resources.produce(new NativeImageResourceBuildItem("output_xml.properties"));
     }
 
     @BuildStep
