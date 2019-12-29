@@ -7,14 +7,14 @@
 
 ### Configuration using `hazelcast.yml`
 
-In order to configure client using the `hazelcast.yml` file, configure a following bean:
+In order to configure client using the `hazelcast.yml` file, place the configuration file in `src/main/resources` and wire up the following bean:
 
     @Produces
     ClientConfig createInstance() {
         return new ClientClasspathYamlConfig("hazelcast.yml");
     }
     
-Configuration entries from `hazelcast.yml` will override `quarkus.hazelcast-client.*` entries.
+Configuration entries from `hazelcast.yml` will override all `quarkus.hazelcast-client.*` entries.
 
 ## Limitations
 - Default serialization is not supported in native mode
