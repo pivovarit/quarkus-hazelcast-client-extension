@@ -22,6 +22,8 @@ import org.jboss.jandex.DotName;
 import org.jboss.jandex.IndexView;
 import org.jboss.jandex.Type;
 
+import java.util.stream.IntStream;
+
 class HazelcastClientProcessor {
 
     private static final String FEATURE = "hazelcast-client";
@@ -44,16 +46,29 @@ class HazelcastClientProcessor {
           "com.sun.xml.bind.v2.ContextFactory",
           "com.sun.xml.internal.bind.v2.ContextFactory",
           "com.sun.org.apache.xpath.internal.functions.FuncNot",
+          "com.sun.org.apache.xerces.internal.impl.dv.xs.SchemaDVFactoryImpl",
           "com.sun.xml.internal.stream.XMLInputFactoryImpl"));
 
-        resources.produce(new NativeImageResourceBuildItem("output_xml.properties"));
         bundles.produce(new NativeImageResourceBundleBuildItem("com.sun.org.apache.xml.internal.serializer.utils.SerializerMessages"));
+        bundles.produce(new NativeImageResourceBundleBuildItem("com.sun.org.apache.xerces.internal.impl.msg.XMLMessages"));
+        bundles.produce(new NativeImageResourceBundleBuildItem("com.sun.org.apache.xerces.internal.impl.msg.XMLSchemaMessages"));
+        bundles.produce(new NativeImageResourceBundleBuildItem("com.sun.org.apache.xerces.internal.impl.xpath.regex.message"));
+
+        resources.produce(new NativeImageResourceBuildItem("com/sun/org/apache/xml/internal/serializer/output_xml.properties"));
     }
 
     @BuildStep
     void registerConfigClasses(BuildProducer<ReflectiveClassBuildItem> reflectiveClass) {
         reflectiveClass.produce(new ReflectiveClassBuildItem(true, false, false, EventJournalConfig.class));
         reflectiveClass.produce(new ReflectiveClassBuildItem(true, false, false, MerkleTreeConfig.class));
+    }
+
+    @BuildStep
+    void registerXsdResources(BuildProducer<NativeImageResourceBuildItem> resources) {
+        IntStream.range(1, 13).boxed()
+          .map(i -> String.format("hazelcast-client-config-3.%d.xsd", i))
+          .forEach(resource -> resources.produce(new NativeImageResourceBuildItem(resource)));
+        resources.produce(new NativeImageResourceBuildItem("hazelcast-client-config-4.0.xsd"));
     }
 
     @BuildStep
