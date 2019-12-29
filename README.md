@@ -15,7 +15,7 @@ In order to configure client using the `hazelcast.yml` file, place the configura
 
 In order to configure client using the `hazelcast.xml` file, place the configuration file in `src/main/resources` and add the following Quarkus configuration entry:
 
-    quarkus.hazelcast-client.config-source=xaml
+    quarkus.hazelcast-client.config-source=xml
     
 Configuration entries from `hazelcast.yml` will override all `quarkus.hazelcast-client.*` entries.
 
