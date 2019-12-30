@@ -84,6 +84,17 @@ class HazelcastClientProcessor {
     }
 
     @BuildStep
+    void registerSSLContextFactoryClasses(
+      CombinedIndexBuildItem combinedIndexBuildItem,
+      BuildProducer<ReflectiveHierarchyBuildItem> reflectiveHierarchyClass) {
+        IndexView index = combinedIndexBuildItem.getIndex();
+
+        for (ClassInfo ci : index.getAllKnownImplementors(DotName.createSimple("com.hazelcast.nio.ssl.SSLContextFactory"))) {
+            reflectiveHierarchyClass.produce(new ReflectiveHierarchyBuildItem(Type.create(ci.name(), Type.Kind.CLASS)));
+        }
+    }
+
+    @BuildStep
     void setup(BuildProducer<AdditionalBeanBuildItem> additionalBeans) {
         additionalBeans.produce(AdditionalBeanBuildItem.unremovableOf(HazelcastClientProducer.class));
     }
