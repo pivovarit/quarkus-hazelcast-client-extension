@@ -19,6 +19,10 @@ Default Hazelcast Client instance can be configured using `application.propertie
     quarkus.hazelcast-client.connection-timeout
     quarkus.hazelcast-client.executor-pool-size
 
+All of them mirror standard Hazelcast Client configuration options.
+
+If you need more configuration options than these, wire-up your own bean, or fallback to standard `hazelcast.yml/hazelcast.xml`-based configuration (described below). 
+
 ### Configuration using `hazelcast.yml`
 
 In order to configure client using the `hazelcast.yml` file, place the configuration file in `src/main/resources` and add the following Quarkus configuration entry:
