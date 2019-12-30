@@ -84,12 +84,12 @@ class HazelcastClientProcessor {
     }
 
     @BuildStep
-    void registerSSLContextFactoryClasses(
+    void registerSocketInterceptorsClasses(
       CombinedIndexBuildItem combinedIndexBuildItem,
       BuildProducer<ReflectiveHierarchyBuildItem> reflectiveHierarchyClass) {
         IndexView index = combinedIndexBuildItem.getIndex();
 
-        for (ClassInfo ci : index.getAllKnownImplementors(DotName.createSimple("com.hazelcast.nio.ssl.SSLContextFactory"))) {
+        for (ClassInfo ci : index.getAllKnownImplementors(DotName.createSimple("com.hazelcast.nio.SocketInterceptor"))) {
             reflectiveHierarchyClass.produce(new ReflectiveHierarchyBuildItem(Type.create(ci.name(), Type.Kind.CLASS)));
         }
     }
