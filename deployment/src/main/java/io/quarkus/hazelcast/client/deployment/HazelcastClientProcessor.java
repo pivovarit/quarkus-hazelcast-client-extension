@@ -61,8 +61,7 @@ class HazelcastClientProcessor {
 
     @BuildStep
     void registerConfigClasses(BuildProducer<ReflectiveClassBuildItem> reflectiveClass) {
-        reflectiveClass.produce(new ReflectiveClassBuildItem(true, false, false, EventJournalConfig.class));
-        reflectiveClass.produce(new ReflectiveClassBuildItem(true, false, false, MerkleTreeConfig.class));
+        reflectiveClass.produce(new ReflectiveClassBuildItem(true, false, false, EventJournalConfig.class, MerkleTreeConfig.class));
     }
 
     @BuildStep
@@ -75,13 +74,14 @@ class HazelcastClientProcessor {
       CombinedIndexBuildItem combinedIndexBuildItem,
       BuildProducer<ReflectiveHierarchyBuildItem> reflectiveHierarchyClass) {
 
-        registerAllImplementations(combinedIndexBuildItem, reflectiveHierarchyClass, DataSerializable.class.getName());
-        registerAllImplementations(combinedIndexBuildItem, reflectiveHierarchyClass, "com.hazelcast.nio.SocketInterceptor");
-        registerAllImplementations(combinedIndexBuildItem, reflectiveHierarchyClass, "com.hazelcast.nio.ssl.SSLContextFactory");
-        registerAllImplementations(combinedIndexBuildItem, reflectiveHierarchyClass, "com.hazelcast.spi.discovery.DiscoveryStrategy");
-        registerAllImplementations(combinedIndexBuildItem, reflectiveHierarchyClass, "com.hazelcast.security.ICredentialsFactory");
-        registerAllImplementations(combinedIndexBuildItem, reflectiveHierarchyClass, "com.hazelcast.core.EntryListener");
-        registerAllImplementations(combinedIndexBuildItem, reflectiveHierarchyClass, "com.hazelcast.map.listener.MapListener");
+        registerAllImplementations(combinedIndexBuildItem, reflectiveHierarchyClass,
+          DataSerializable.class.getName(),
+          "com.hazelcast.nio.SocketInterceptor",
+          "com.hazelcast.nio.ssl.SSLContextFactory",
+          "com.hazelcast.spi.discovery.DiscoveryStrategy",
+          "com.hazelcast.security.ICredentialsFactory",
+          "com.hazelcast.core.EntryListener",
+          "com.hazelcast.map.listener.MapListener");
     }
 
     @BuildStep
@@ -98,9 +98,11 @@ class HazelcastClientProcessor {
         return new HazelcastClientConfiguredBuildItem();
     }
 
-    private static void registerAllImplementations(CombinedIndexBuildItem combinedIndexBuildItem, BuildProducer<ReflectiveHierarchyBuildItem> reflectiveHierarchyClass, String className) {
-        combinedIndexBuildItem.getIndex().getAllKnownImplementors(DotName.createSimple(className)).stream()
-          .map(ci -> new ReflectiveHierarchyBuildItem(Type.create(ci.name(), Type.Kind.CLASS)))
-          .forEach(reflectiveHierarchyClass::produce);
+    private static void registerAllImplementations(CombinedIndexBuildItem combinedIndexBuildItem, BuildProducer<ReflectiveHierarchyBuildItem> reflectiveHierarchyClass, String... classNames) {
+        for (String className : classNames) {
+            combinedIndexBuildItem.getIndex().getAllKnownImplementors(DotName.createSimple(className)).stream()
+              .map(ci -> new ReflectiveHierarchyBuildItem(Type.create(ci.name(), Type.Kind.CLASS)))
+              .forEach(reflectiveHierarchyClass::produce);
+        }
     }
 }
