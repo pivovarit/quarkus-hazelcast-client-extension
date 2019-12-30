@@ -20,8 +20,6 @@ import io.quarkus.hazelcast.client.HazelcastRecorder;
 import org.jboss.jandex.DotName;
 import org.jboss.jandex.Type;
 
-import java.util.stream.IntStream;
-
 class HazelcastClientProcessor {
 
     private static final String FEATURE = "hazelcast-client";
