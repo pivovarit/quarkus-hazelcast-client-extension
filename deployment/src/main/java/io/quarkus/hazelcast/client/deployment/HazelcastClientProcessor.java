@@ -78,6 +78,10 @@ class HazelcastClientProcessor {
         registerAllImplementations(combinedIndexBuildItem, reflectiveHierarchyClass, DataSerializable.class.getName());
         registerAllImplementations(combinedIndexBuildItem, reflectiveHierarchyClass, "com.hazelcast.nio.SocketInterceptor");
         registerAllImplementations(combinedIndexBuildItem, reflectiveHierarchyClass, "com.hazelcast.nio.ssl.SSLContextFactory");
+        registerAllImplementations(combinedIndexBuildItem, reflectiveHierarchyClass, "com.hazelcast.spi.discovery.DiscoveryStrategy");
+        registerAllImplementations(combinedIndexBuildItem, reflectiveHierarchyClass, "com.hazelcast.security.ICredentialsFactory");
+        registerAllImplementations(combinedIndexBuildItem, reflectiveHierarchyClass, "com.hazelcast.core.EntryListener");
+        registerAllImplementations(combinedIndexBuildItem, reflectiveHierarchyClass, "com.hazelcast.map.listener.MapListener");
     }
 
     @BuildStep
