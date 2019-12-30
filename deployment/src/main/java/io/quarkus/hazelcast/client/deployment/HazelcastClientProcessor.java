@@ -55,6 +55,10 @@ class HazelcastClientProcessor {
         bundles.produce(new NativeImageResourceBundleBuildItem("com.sun.org.apache.xerces.internal.impl.xpath.regex.message"));
 
         resources.produce(new NativeImageResourceBuildItem("com/sun/org/apache/xml/internal/serializer/output_xml.properties"));
+
+        IntStream.rangeClosed(1, 12).boxed().map(i -> String.format("hazelcast-client-config-3.%d.xsd", i))
+          .forEach(resource -> resources.produce(new NativeImageResourceBuildItem(resource)));
+        resources.produce(new NativeImageResourceBuildItem("hazelcast-client-config-4.0.xsd"));
     }
 
     @BuildStep
@@ -64,15 +68,7 @@ class HazelcastClientProcessor {
     }
 
     @BuildStep
-    void registerXsdResources(BuildProducer<NativeImageResourceBuildItem> resources) {
-        IntStream.range(1, 13).boxed()
-          .map(i -> String.format("hazelcast-client-config-3.%d.xsd", i))
-          .forEach(resource -> resources.produce(new NativeImageResourceBuildItem(resource)));
-        resources.produce(new NativeImageResourceBuildItem("hazelcast-client-config-4.0.xsd"));
-    }
-
-    @BuildStep
-    void registerResources(BuildProducer<NativeImageResourceBuildItem> resources) {
+    void registerConfigurationResources(BuildProducer<NativeImageResourceBuildItem> resources) {
         resources.produce(new NativeImageResourceBuildItem("hazelcast.yml", "hazelcast.xml"));
     }
 
