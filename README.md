@@ -3,7 +3,7 @@
 <a href="https://github.com/actions/toolkit"><img alt="GitHub Actions status" src="https://github.com/pivovarit/quarkus-hazelcast-client-extension/workflows/build/badge.svg"></a>
 
 ## Features
-- Lazy init for client (TODO)
+- The HazelcastInstance bean is initialized lazily by Quarkus, if you want eager initialization, make sure to double-check [Quarkus Documentation](https://quarkus.io/guides/cdi-reference#eager-instantiation-of-beans). 
 
 ## Quarkus hazelcast-client configuration
 
@@ -21,7 +21,7 @@ Default Hazelcast Client instance can be configured using `application.propertie
 
 All of them mirror standard Hazelcast Client configuration options.
 
-If you need more configuration options than these, wire-up your own bean, or fallback to standard `hazelcast.yml/hazelcast.xml`-based configuration (described below). 
+If you need more configuration options than these, wire-up your own `ClientConfig` or `HazelcastInstance` bean, or fallback to standard `hazelcast.yml/hazelcast.xml`-based configuration (described below). 
 
 ### Configuration using `hazelcast.yml`
 
