@@ -56,7 +56,7 @@ class HazelcastClientProcessor {
 
         resources.produce(new NativeImageResourceBuildItem("com/sun/org/apache/xml/internal/serializer/output_xml.properties"));
 
-        IntStream.rangeClosed(1, 1).boxed().map(i -> String.format("hazelcast-client-config-3.%d.xsd", i))
+        IntStream.rangeClosed(1, 12).boxed().map(i -> String.format("hazelcast-client-config-3.%d.xsd", i))
           .forEach(resource -> resources.produce(new NativeImageResourceBuildItem(resource)));
         resources.produce(new NativeImageResourceBuildItem("hazelcast-client-config-4.0.xsd"));
     }
