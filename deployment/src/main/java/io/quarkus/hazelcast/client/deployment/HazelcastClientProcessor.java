@@ -17,9 +17,7 @@ import io.quarkus.deployment.builditem.nativeimage.ReflectiveHierarchyBuildItem;
 import io.quarkus.hazelcast.client.HazelcastClientConfig;
 import io.quarkus.hazelcast.client.HazelcastClientProducer;
 import io.quarkus.hazelcast.client.HazelcastRecorder;
-import org.jboss.jandex.ClassInfo;
 import org.jboss.jandex.DotName;
-import org.jboss.jandex.IndexView;
 import org.jboss.jandex.Type;
 
 import java.util.stream.IntStream;
@@ -73,25 +71,13 @@ class HazelcastClientProcessor {
     }
 
     @BuildStep
-    void registerDataSerializableClasses(
+    void registerCustomImplementationClasses(
       CombinedIndexBuildItem combinedIndexBuildItem,
       BuildProducer<ReflectiveHierarchyBuildItem> reflectiveHierarchyClass) {
-        IndexView index = combinedIndexBuildItem.getIndex();
 
-        for (ClassInfo ci : index.getAllKnownImplementors(DotName.createSimple(DataSerializable.class.getName()))) {
-            reflectiveHierarchyClass.produce(new ReflectiveHierarchyBuildItem(Type.create(ci.name(), Type.Kind.CLASS)));
-        }
-    }
-
-    @BuildStep
-    void registerSocketInterceptorsClasses(
-      CombinedIndexBuildItem combinedIndexBuildItem,
-      BuildProducer<ReflectiveHierarchyBuildItem> reflectiveHierarchyClass) {
-        IndexView index = combinedIndexBuildItem.getIndex();
-
-        for (ClassInfo ci : index.getAllKnownImplementors(DotName.createSimple("com.hazelcast.nio.SocketInterceptor"))) {
-            reflectiveHierarchyClass.produce(new ReflectiveHierarchyBuildItem(Type.create(ci.name(), Type.Kind.CLASS)));
-        }
+        registerAllImplementations(combinedIndexBuildItem, reflectiveHierarchyClass, DataSerializable.class.getName());
+        registerAllImplementations(combinedIndexBuildItem, reflectiveHierarchyClass, "com.hazelcast.nio.SocketInterceptor");
+        registerAllImplementations(combinedIndexBuildItem, reflectiveHierarchyClass, "com.hazelcast.nio.ssl.SSLContextFactory");
     }
 
     @BuildStep
@@ -106,5 +92,11 @@ class HazelcastClientProcessor {
       HazelcastClientConfig config) {
         recorder.configureRuntimeProperties(config);
         return new HazelcastClientConfiguredBuildItem();
+    }
+
+    private static void registerAllImplementations(CombinedIndexBuildItem combinedIndexBuildItem, BuildProducer<ReflectiveHierarchyBuildItem> reflectiveHierarchyClass, String className) {
+        combinedIndexBuildItem.getIndex().getAllKnownImplementors(DotName.createSimple(className)).stream()
+          .map(ci -> new ReflectiveHierarchyBuildItem(Type.create(ci.name(), Type.Kind.CLASS)))
+          .forEach(reflectiveHierarchyClass::produce);
     }
 }
