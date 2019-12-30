@@ -7,7 +7,9 @@
 
 ## Quarkus hazelcast-client configuration
 
-Default Hazelcast Client instance can be configured using `application.properties` entries such as:
+By default, client will try to connect to a Hazelcast instance running on the host using port 5701.
+
+Defaults can be customized using `application.properties` entries such as:
 
     quarkus.hazelcast-client.cluster-members
     quarkus.hazelcast-client.outbound-port-definitions
@@ -23,7 +25,11 @@ All of them mirror standard Hazelcast Client configuration options.
 
 If you need more configuration options than these, wire-up your own `ClientConfig` or `HazelcastInstance` bean, or fallback to standard `hazelcast.yml/hazelcast.xml`-based configuration (described below). 
 
-### Configuration using `hazelcast.yml`
+### Configuration Files
+
+The default location for `hazelcast.yml` and `hazelcast.xml` files is `src/main/resources`. If you want to use a different location, remember to provide GraalVM with its location (native mode only).
+
+#### Configuration using `hazelcast.yml`
 
 In order to configure client using the `hazelcast.yml` file, place the configuration file in `src/main/resources` and add the following Quarkus configuration entry:
 
@@ -31,7 +37,7 @@ In order to configure client using the `hazelcast.yml` file, place the configura
     
 Configuration entries from `hazelcast.yml` override all `quarkus.hazelcast-client.*` entries.
 
-### Configuration using `hazelcast.xml` (limited supported in native mode)
+#### Configuration using `hazelcast.xml` (limited supported in native mode)
 
 In order to configure client using the `hazelcast.xml` file, place the configuration file in `src/main/resources` and add the following Quarkus configuration entry:
 
