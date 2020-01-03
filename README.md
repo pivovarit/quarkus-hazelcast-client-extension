@@ -2,6 +2,16 @@
 
 <a href="https://github.com/actions/toolkit"><img alt="GitHub Actions status" src="https://github.com/pivovarit/quarkus-hazelcast-client-extension/workflows/build/badge.svg"></a>
 
+[Hazelcast IMDG](https://hazelcast.com/products/imdg/) is a distributed in-memory object store and compute engine that supports a wide variety of data structures such as Map, Set, List, MultiMap, RingBuffer, HyperLogLog. 
+
+Use Hazelcast IMDG to store your data in RAM, spread and replicate it across a cluster of machines, and perform data-local computation on it. 
+
+Hazelcast is:
+- cloud and Kubernetes friendly
+- often used as a Distributed Cache amongst other use cases
+
+It is often used as a Distributed Cache amongst other use cases.
+
 ## Features
 - The HazelcastInstance bean is initialized lazily by Quarkus, if you want eager initialization, make sure to double-check [Quarkus Documentation](https://quarkus.io/guides/cdi-reference#eager-instantiation-of-beans). 
 
