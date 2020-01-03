@@ -83,13 +83,19 @@ class HazelcastClientProcessor {
           DataSerializable.class.getName(),
           "com.hazelcast.nio.SocketInterceptor",
           "com.hazelcast.nio.ssl.SSLContextFactory",
+          "com.hazelcast.nio.serialization.Serializer",
           "com.hazelcast.spi.discovery.DiscoveryStrategy",
+          "com.hazelcast.security.ICredentialsFactory",
           "com.hazelcast.core.MembershipListener",
           "com.hazelcast.core.MigrationListener",
-          "com.hazelcast.security.ICredentialsFactory",
           "com.hazelcast.core.EntryListener",
+          "com.hazelcast.core.MessageListener",
+          "com.hazelcast.core.ItemListener",
           "com.hazelcast.map.listener.MapListener",
-          "com.hazelcast.client.ClientExtension");
+          "com.hazelcast.quorum.QuorumListener",
+          "com.hazelcast.quorum.QuorumFunction",
+          "com.hazelcast.client.ClientExtension",
+          "com.hazelcast.client.spi.ClientProxyFactory");
 
         registerAllSubclasses(combinedIndexBuildItem, reflectiveHierarchyClass,
           "com.hazelcast.client.connection.ClientConnectionStrategy");
