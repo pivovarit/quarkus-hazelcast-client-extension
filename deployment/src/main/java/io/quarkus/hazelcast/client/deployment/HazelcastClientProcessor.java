@@ -79,6 +79,8 @@ class HazelcastClientProcessor {
           "com.hazelcast.nio.SocketInterceptor",
           "com.hazelcast.nio.ssl.SSLContextFactory",
           "com.hazelcast.spi.discovery.DiscoveryStrategy",
+          "com.hazelcast.core.MembershipListener",
+          "com.hazelcast.core.MigrationListener",
           "com.hazelcast.security.ICredentialsFactory",
           "com.hazelcast.core.EntryListener",
           "com.hazelcast.map.listener.MapListener");
