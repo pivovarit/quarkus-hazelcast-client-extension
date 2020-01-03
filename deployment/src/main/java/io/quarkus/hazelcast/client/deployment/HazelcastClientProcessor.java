@@ -83,7 +83,8 @@ class HazelcastClientProcessor {
           "com.hazelcast.core.MigrationListener",
           "com.hazelcast.security.ICredentialsFactory",
           "com.hazelcast.core.EntryListener",
-          "com.hazelcast.map.listener.MapListener");
+          "com.hazelcast.map.listener.MapListener",
+          "com.hazelcast.client.ClientExtension");
     }
 
     @BuildStep
