@@ -42,6 +42,8 @@ jobs:
 
       - name: Verify
         run: |
+          sleep 1
+
           echo "Setting key=key_1&value=value_1"
           curl -s -X POST "localhost:8081/hazelcast/put?key=key_1&value=value_1" && sleep 1
 
