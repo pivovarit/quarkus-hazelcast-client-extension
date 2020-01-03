@@ -10,8 +10,6 @@ Hazelcast is:
 - cloud and Kubernetes friendly
 - often used as a Distributed Cache amongst other use cases
 
-It is often used as a Distributed Cache amongst other use cases.
-
 ## Features
 - The HazelcastInstance bean is initialized lazily by Quarkus, if you want eager initialization, make sure to double-check [Quarkus Documentation](https://quarkus.io/guides/cdi-reference#eager-instantiation-of-beans). 
 
