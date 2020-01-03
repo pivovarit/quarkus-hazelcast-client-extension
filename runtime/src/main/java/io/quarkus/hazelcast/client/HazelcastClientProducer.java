@@ -66,6 +66,7 @@ public class HazelcastClientProducer {
         return source -> {
             switch (source) {
                 case "yaml":
+                case "yml":
                     return new ClientClasspathYamlConfig("hazelcast-client.yml");
                 case "xml":
                     return new ClientClasspathXmlConfig("hazelcast-client.xml");
