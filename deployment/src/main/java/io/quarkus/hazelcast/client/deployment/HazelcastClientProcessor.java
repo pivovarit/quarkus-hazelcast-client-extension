@@ -81,7 +81,8 @@ class HazelcastClientProcessor {
           "com.hazelcast.spi.discovery.DiscoveryStrategy",
           "com.hazelcast.security.ICredentialsFactory",
           "com.hazelcast.core.EntryListener",
-          "com.hazelcast.map.listener.MapListener");
+          "com.hazelcast.map.listener.MapListener",
+          "com.hazelcast.client.ClientExtension");
     }
 
     @BuildStep
