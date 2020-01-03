@@ -23,28 +23,28 @@ Defaults can be customized using `application.properties` entries such as:
 
 All of them mirror standard Hazelcast Client configuration options.
 
-If you need more configuration options than these, wire-up your own `ClientConfig` or `HazelcastInstance` bean, or fallback to standard `hazelcast.yml/hazelcast.xml`-based configuration (described below). 
+If you need more configuration options than these, wire-up your own `ClientConfig` or `HazelcastInstance` bean, or fallback to standard `hazelcast-client.yml/hazelcast-client.xml`-based configuration (described below). 
 
 ### Configuration Files
 
-The default location for `hazelcast.yml` and `hazelcast.xml` files is `src/main/resources`. If you want to use a different location, remember to provide GraalVM with its location (native mode only).
+The default location for `hazelcast-client.yml` and `hazelcast-client.xml` files is `src/main/resources`. If you want to use a different location, remember to provide GraalVM with its location (native mode only).
 
-#### Configuration using `hazelcast.yml`
+#### Configuration using `hazelcast-client.yml`
 
-In order to configure client using the `hazelcast.yml` file, place the configuration file in `src/main/resources` and add the following Quarkus configuration entry:
+In order to configure client using the `hazelcast-client.yml` file, place the configuration file in `src/main/resources` and add the following Quarkus configuration entry:
 
     quarkus.hazelcast-client.config-source=yaml
     
-Configuration entries from `hazelcast.yml` override all `quarkus.hazelcast-client.*` entries.
+Configuration entries from `hazelcast-client.yml` override all `quarkus.hazelcast-client.*` entries.
 
-#### Configuration using `hazelcast.xml` (limited support in native mode)
+#### Configuration using `hazelcast-client.xml` (limited support in native mode)
 
-In order to configure client using the `hazelcast.xml` file, place the configuration file in `src/main/resources` and add the following Quarkus configuration entry:
+In order to configure client using the `hazelcast-client.xml` file, place the configuration file in `src/main/resources` and add the following Quarkus configuration entry:
 
     quarkus.hazelcast-client.config-source=xml
     
-Configuration entries from `hazelcast.xml` override all `quarkus.hazelcast-client.*` entries.
+Configuration entries from `hazelcast-client.xml` override all `quarkus.hazelcast-client.*` entries.
 
 ## Limitations
 - Default serialization is not supported in native mode
-- Configuration via `hazelcast.xml` is not fully supported
+- Configuration via `hazelcast-client.xml` is not fully supported
