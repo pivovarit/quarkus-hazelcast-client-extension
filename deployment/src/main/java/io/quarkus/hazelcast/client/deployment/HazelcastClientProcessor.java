@@ -71,7 +71,7 @@ class HazelcastClientProcessor {
 
     @BuildStep
     void registerConfigurationResources(BuildProducer<NativeImageResourceBuildItem> resources) {
-        resources.produce(new NativeImageResourceBuildItem("hazelcast.yml", "hazelcast.xml"));
+        resources.produce(new NativeImageResourceBuildItem("hazelcast-client.yml", "hazelcast-client.xml"));
     }
 
     @BuildStep

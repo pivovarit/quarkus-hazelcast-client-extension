@@ -67,9 +67,9 @@ public class HazelcastClientProducer {
             switch (source) {
                 case "yaml":
                 case "yml":
-                    return new ClientClasspathYamlConfig("hazelcast.yml");
+                    return new ClientClasspathYamlConfig("hazelcast-client.yml");
                 case "xml":
-                    return new ClientClasspathXmlConfig("hazelcast.xml");
+                    return new ClientClasspathXmlConfig("hazelcast-client.xml");
                 default:
                     throw new IllegalStateException(String.format("Config source: [%s] is not supported", source));
             }
