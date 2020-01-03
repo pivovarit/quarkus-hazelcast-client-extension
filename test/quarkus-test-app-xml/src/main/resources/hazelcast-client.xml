@@ -13,7 +13,7 @@
             <ports>34700-34710</ports>
         </outbound-ports>
 
-        <socket-interceptor>
+        <socket-interceptor enabled="true">
             <class-name>guides.hazelcast.quarkus.HelloSocketInterceptor</class-name>
             <properties>
                 <property name="foo">bar</property>

@@ -9,7 +9,7 @@ import java.util.Properties;
 class HelloSocketInterceptor implements SocketInterceptor {
     @Override
     public void init(Properties properties) {
-        System.out.println("Initializing socket interceptor");
+        System.out.println("Initializing socket interceptor with properties");
     }
 
     @Override
