@@ -90,6 +90,9 @@ class HazelcastClientProcessor {
           "com.hazelcast.core.EntryListener",
           "com.hazelcast.map.listener.MapListener",
           "com.hazelcast.client.ClientExtension");
+
+        registerAllSubclasses(combinedIndexBuildItem, reflectiveHierarchyClass,
+          "com.hazelcast.client.connection.ClientConnectionStrategy");
     }
 
     @BuildStep
@@ -109,6 +112,14 @@ class HazelcastClientProcessor {
     private static void registerAllImplementations(CombinedIndexBuildItem combinedIndexBuildItem, BuildProducer<ReflectiveHierarchyBuildItem> reflectiveHierarchyClass, String... classNames) {
         for (String className : classNames) {
             combinedIndexBuildItem.getIndex().getAllKnownImplementors(DotName.createSimple(className)).stream()
+              .map(ci -> new ReflectiveHierarchyBuildItem(Type.create(ci.name(), Type.Kind.CLASS)))
+              .forEach(reflectiveHierarchyClass::produce);
+        }
+    }
+
+    private static void registerAllSubclasses(CombinedIndexBuildItem combinedIndexBuildItem, BuildProducer<ReflectiveHierarchyBuildItem> reflectiveHierarchyClass, String... classNames) {
+        for (String className : classNames) {
+            combinedIndexBuildItem.getIndex().getAllKnownSubclasses(DotName.createSimple(className)).stream()
               .map(ci -> new ReflectiveHierarchyBuildItem(Type.create(ci.name(), Type.Kind.CLASS)))
               .forEach(reflectiveHierarchyClass::produce);
         }
