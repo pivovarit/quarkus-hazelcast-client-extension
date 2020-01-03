@@ -27,7 +27,7 @@ If you need more configuration options than these, wire-up your own `ClientConfi
 
 ### Configuration Files
 
-The default location for `hazelcast-client.yml` and `hazelcast-client.xml` files is `src/main/resources`. If you want to use a different location, remember to provide GraalVM with its location (native mode only).
+The default location for `hazelcast-client.yml` is `src/main/resources`. If you want to use a different one, remember to provide GraalVM with its location (native mode only).
 
 #### Configuration using `hazelcast-client.yml`
 
@@ -37,14 +37,5 @@ In order to configure client using the `hazelcast-client.yml` file, place the co
     
 Configuration entries from `hazelcast-client.yml` override all `quarkus.hazelcast-client.*` entries.
 
-#### Configuration using `hazelcast-client.xml` (limited support in native mode)
-
-In order to configure client using the `hazelcast-client.xml` file, place the configuration file in `src/main/resources` and add the following Quarkus configuration entry:
-
-    quarkus.hazelcast-client.config-source=xml
-    
-Configuration entries from `hazelcast-client.xml` override all `quarkus.hazelcast-client.*` entries.
-
 ## Limitations
 - Default serialization is not supported in native mode
-- Configuration via `hazelcast-client.xml` is not fully supported
