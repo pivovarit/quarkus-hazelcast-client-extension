@@ -12,5 +12,12 @@
             <ports>34600</ports>
             <ports>34700-34710</ports>
         </outbound-ports>
+
+        <socket-interceptor enabled="true">
+            <class-name>guides.hazelcast.quarkus.HelloSocketInterceptor</class-name>
+            <properties>
+                <property name="foo">bar</property>
+            </properties>
+        </socket-interceptor>
     </network>
 </hazelcast-client>
