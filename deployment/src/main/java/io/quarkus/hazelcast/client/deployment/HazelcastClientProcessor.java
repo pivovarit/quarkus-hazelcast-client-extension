@@ -32,6 +32,11 @@ class HazelcastClientProcessor {
     }
 
     @BuildStep
+    void registerDynamicallyCreatedClasses(BuildProducer<ReflectiveClassBuildItem> reflectiveClass) {
+        reflectiveClass.produce(new ReflectiveClassBuildItem(false, false, "com.hazelcast.client.cache.impl.HazelcastClientCachingProvider"));
+    }
+
+    @BuildStep
     void registerXmlParsingClasses(
       BuildProducer<ReflectiveClassBuildItem> reflectiveClass,
       BuildProducer<NativeImageResourceBundleBuildItem> bundles,
