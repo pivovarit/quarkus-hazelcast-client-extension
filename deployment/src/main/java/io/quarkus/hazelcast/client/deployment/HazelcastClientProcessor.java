@@ -1,8 +1,11 @@
 package io.quarkus.hazelcast.client.deployment;
 
+import com.hazelcast.client.cache.impl.HazelcastClientCachingProvider;
 import com.hazelcast.config.EventJournalConfig;
 import com.hazelcast.config.MerkleTreeConfig;
 import com.hazelcast.nio.serialization.DataSerializable;
+import com.sun.org.apache.xerces.internal.jaxp.DocumentBuilderFactoryImpl;
+import com.sun.org.apache.xerces.internal.jaxp.datatype.DatatypeFactoryImpl;
 import io.quarkus.arc.deployment.AdditionalBeanBuildItem;
 import io.quarkus.deployment.annotations.BuildProducer;
 import io.quarkus.deployment.annotations.BuildStep;
@@ -33,7 +36,7 @@ class HazelcastClientProcessor {
 
     @BuildStep
     void registerDynamicallyCreatedClasses(BuildProducer<ReflectiveClassBuildItem> reflectiveClass) {
-        reflectiveClass.produce(new ReflectiveClassBuildItem(false, false, "com.hazelcast.client.cache.impl.HazelcastClientCachingProvider"));
+        reflectiveClass.produce(new ReflectiveClassBuildItem(false, false, HazelcastClientCachingProvider.class));
     }
 
     @BuildStep
@@ -42,15 +45,16 @@ class HazelcastClientProcessor {
       BuildProducer<NativeImageResourceBundleBuildItem> bundles,
       BuildProducer<NativeImageResourceBuildItem> resources) {
         reflectiveClass.produce(new ReflectiveClassBuildItem(false, false,
-          "com.sun.org.apache.xerces.internal.jaxp.DocumentBuilderFactoryImpl",
-          "com.sun.org.apache.xerces.internal.jaxp.datatype.DatatypeFactoryImpl",
-          "com.sun.org.apache.xalan.internal.xsltc.trax.TransformerFactoryImpl",
-          "com.sun.org.apache.xerces.internal.jaxp.SAXParserFactoryImpl",
-          "com.sun.xml.bind.v2.ContextFactory",
-          "com.sun.xml.internal.bind.v2.ContextFactory",
-          "com.sun.org.apache.xpath.internal.functions.FuncNot",
-          "com.sun.org.apache.xerces.internal.impl.dv.xs.SchemaDVFactoryImpl",
-          "com.sun.xml.internal.stream.XMLInputFactoryImpl"));
+          DocumentBuilderFactoryImpl.class,
+          DatatypeFactoryImpl.class,
+          com.sun.org.apache.xalan.internal.xsltc.trax.TransformerFactoryImpl.class,
+          com.sun.org.apache.xerces.internal.jaxp.SAXParserFactoryImpl.class,
+          com.sun.xml.bind.v2.ContextFactory.class,
+          com.sun.org.apache.xpath.internal.functions.FuncNot.class,
+          com.sun.org.apache.xerces.internal.impl.dv.xs.SchemaDVFactoryImpl.class,
+          com.sun.xml.internal.stream.XMLInputFactoryImpl.class));
+
+        reflectiveClass.produce(new ReflectiveClassBuildItem(false, false,"com.sun.xml.internal.bind.v2.ContextFactory"));
 
         bundles.produce(new NativeImageResourceBundleBuildItem("com.sun.org.apache.xml.internal.serializer.utils.SerializerMessages"));
         bundles.produce(new NativeImageResourceBundleBuildItem("com.sun.org.apache.xerces.internal.impl.msg.XMLMessages"));
@@ -81,22 +85,22 @@ class HazelcastClientProcessor {
 
         registerAllImplementations(combinedIndexBuildItem, reflectiveHierarchyClass,
           DataSerializable.class.getName(),
-          "com.hazelcast.nio.SocketInterceptor",
-          "com.hazelcast.nio.ssl.SSLContextFactory",
-          "com.hazelcast.nio.serialization.Serializer",
-          "com.hazelcast.spi.discovery.DiscoveryStrategy",
-          "com.hazelcast.security.ICredentialsFactory",
-          "com.hazelcast.core.MembershipListener",
-          "com.hazelcast.core.MigrationListener",
-          "com.hazelcast.core.EntryListener",
-          "com.hazelcast.core.MessageListener",
-          "com.hazelcast.core.ItemListener",
-          "com.hazelcast.map.listener.MapListener",
-          "com.hazelcast.quorum.QuorumListener",
-          "com.hazelcast.quorum.QuorumFunction",
-          "com.hazelcast.config.replacer.spi.ConfigReplacer",
-          "com.hazelcast.client.ClientExtension",
-          "com.hazelcast.client.spi.ClientProxyFactory");
+          com.hazelcast.nio.SocketInterceptor.class.getName(),
+          com.hazelcast.nio.ssl.SSLContextFactory.class.getName(),
+          com.hazelcast.nio.serialization.Serializer.class.getName(),
+          com.hazelcast.spi.discovery.DiscoveryStrategy.class.getName(),
+          com.hazelcast.security.ICredentialsFactory.class.getName(),
+          com.hazelcast.core.MembershipListener.class.getName(),
+          com.hazelcast.core.MigrationListener.class.getName(),
+          com.hazelcast.core.EntryListener.class.getName(),
+          com.hazelcast.core.MessageListener.class.getName(),
+          com.hazelcast.core.ItemListener.class.getName(),
+          com.hazelcast.map.listener.MapListener.class.getName(),
+          com.hazelcast.quorum.QuorumListener.class.getName(),
+          com.hazelcast.quorum.QuorumFunction.class.getName(),
+          com.hazelcast.config.replacer.spi.ConfigReplacer.class.getName(),
+          com.hazelcast.client.ClientExtension.class.getName(),
+          com.hazelcast.client.spi.ClientProxyFactory.class.getName());
 
         registerAllSubclasses(combinedIndexBuildItem, reflectiveHierarchyClass,
           "com.hazelcast.client.connection.ClientConnectionStrategy");
