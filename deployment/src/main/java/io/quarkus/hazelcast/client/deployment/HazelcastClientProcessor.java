@@ -2,6 +2,8 @@ package io.quarkus.hazelcast.client.deployment;
 
 import com.hazelcast.config.EventJournalConfig;
 import com.hazelcast.config.MerkleTreeConfig;
+import com.hazelcast.config.replacer.EncryptionReplacer;
+import com.hazelcast.config.replacer.PropertyReplacer;
 import com.hazelcast.config.replacer.spi.ConfigReplacer;
 import com.hazelcast.nio.serialization.DataSerializable;
 import io.quarkus.arc.deployment.AdditionalBeanBuildItem;
@@ -68,6 +70,8 @@ class HazelcastClientProcessor {
     @BuildStep
     void registerConfigClasses(BuildProducer<ReflectiveClassBuildItem> reflectiveClass) {
         reflectiveClass.produce(new ReflectiveClassBuildItem(true, false, false, EventJournalConfig.class, MerkleTreeConfig.class));
+        reflectiveClass.produce(new ReflectiveClassBuildItem(true, false, false, EncryptionReplacer.class));
+        reflectiveClass.produce(new ReflectiveClassBuildItem(true, false, false, PropertyReplacer.class));
     }
 
     @BuildStep
