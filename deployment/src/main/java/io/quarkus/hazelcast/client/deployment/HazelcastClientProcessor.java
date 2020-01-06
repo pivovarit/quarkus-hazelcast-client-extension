@@ -3,6 +3,8 @@ package io.quarkus.hazelcast.client.deployment;
 import com.hazelcast.client.cache.impl.HazelcastClientCachingProvider;
 import com.hazelcast.config.EventJournalConfig;
 import com.hazelcast.config.MerkleTreeConfig;
+import com.hazelcast.config.replacer.EncryptionReplacer;
+import com.hazelcast.config.replacer.PropertyReplacer;
 import com.hazelcast.nio.serialization.DataSerializable;
 import io.quarkus.arc.deployment.AdditionalBeanBuildItem;
 import io.quarkus.deployment.annotations.BuildProducer;
@@ -48,11 +50,10 @@ class HazelcastClientProcessor {
           "com.sun.xml.bind.v2.ContextFactory",
           "com.sun.xml.internal.stream.XMLInputFactoryImpl",
           "com.sun.org.apache.xpath.internal.functions.FuncNot",
+          "com.sun.xml.internal.bind.v2.ContextFactory",
           "com.sun.org.apache.xalan.internal.xsltc.trax.TransformerFactoryImpl",
           "com.sun.org.apache.xerces.internal.impl.dv.xs.SchemaDVFactoryImpl",
           "com.sun.org.apache.xerces.internal.jaxp.datatype.DatatypeFactoryImpl"));
-
-        reflectiveClass.produce(new ReflectiveClassBuildItem(false, false,"com.sun.xml.internal.bind.v2.ContextFactory"));
 
         bundles.produce(new NativeImageResourceBundleBuildItem("com.sun.org.apache.xml.internal.serializer.utils.SerializerMessages"));
         bundles.produce(new NativeImageResourceBundleBuildItem("com.sun.org.apache.xerces.internal.impl.msg.XMLMessages"));
@@ -68,7 +69,11 @@ class HazelcastClientProcessor {
 
     @BuildStep
     void registerConfigClasses(BuildProducer<ReflectiveClassBuildItem> reflectiveClass) {
-        reflectiveClass.produce(new ReflectiveClassBuildItem(true, false, false, EventJournalConfig.class, MerkleTreeConfig.class));
+        reflectiveClass.produce(new ReflectiveClassBuildItem(true, false, false,
+          EventJournalConfig.class,
+          MerkleTreeConfig.class,
+          EncryptionReplacer.class,
+          PropertyReplacer.class));
     }
 
     @BuildStep
@@ -82,26 +87,25 @@ class HazelcastClientProcessor {
       BuildProducer<ReflectiveHierarchyBuildItem> reflectiveHierarchyClass) {
 
         registerAllImplementations(combinedIndexBuildItem, reflectiveHierarchyClass,
-          DataSerializable.class.getName(),
-          com.hazelcast.nio.SocketInterceptor.class.getName(),
-          com.hazelcast.nio.ssl.SSLContextFactory.class.getName(),
-          com.hazelcast.nio.serialization.Serializer.class.getName(),
-          com.hazelcast.spi.discovery.DiscoveryStrategy.class.getName(),
-          com.hazelcast.security.ICredentialsFactory.class.getName(),
-          com.hazelcast.core.MembershipListener.class.getName(),
-          com.hazelcast.core.MigrationListener.class.getName(),
-          com.hazelcast.core.EntryListener.class.getName(),
-          com.hazelcast.core.MessageListener.class.getName(),
-          com.hazelcast.core.ItemListener.class.getName(),
-          com.hazelcast.map.listener.MapListener.class.getName(),
-          com.hazelcast.quorum.QuorumListener.class.getName(),
-          com.hazelcast.quorum.QuorumFunction.class.getName(),
-          com.hazelcast.config.replacer.spi.ConfigReplacer.class.getName(),
-          com.hazelcast.client.ClientExtension.class.getName(),
-          com.hazelcast.client.spi.ClientProxyFactory.class.getName());
+          DataSerializable.class,
+          com.hazelcast.nio.SocketInterceptor.class,
+          com.hazelcast.nio.ssl.SSLContextFactory.class,
+          com.hazelcast.nio.serialization.Serializer.class,
+          com.hazelcast.spi.discovery.DiscoveryStrategy.class,
+          com.hazelcast.security.ICredentialsFactory.class,
+          com.hazelcast.core.MembershipListener.class,
+          com.hazelcast.core.MigrationListener.class,
+          com.hazelcast.core.EntryListener.class,
+          com.hazelcast.core.MessageListener.class,
+          com.hazelcast.core.ItemListener.class,
+          com.hazelcast.map.listener.MapListener.class,
+          com.hazelcast.quorum.QuorumListener.class,
+          com.hazelcast.quorum.QuorumFunction.class,
+          com.hazelcast.config.replacer.spi.ConfigReplacer.class,
+          com.hazelcast.client.ClientExtension.class,
+          com.hazelcast.client.spi.ClientProxyFactory.class);
 
-        registerAllSubclasses(combinedIndexBuildItem, reflectiveHierarchyClass,
-          "com.hazelcast.client.connection.ClientConnectionStrategy");
+        registerAllSubclasses(combinedIndexBuildItem, reflectiveHierarchyClass,com.hazelcast.client.connection.ClientConnectionStrategy.class);
     }
 
     @BuildStep
@@ -118,17 +122,17 @@ class HazelcastClientProcessor {
         return new HazelcastClientConfiguredBuildItem();
     }
 
-    private static void registerAllImplementations(CombinedIndexBuildItem combinedIndexBuildItem, BuildProducer<ReflectiveHierarchyBuildItem> reflectiveHierarchyClass, String... classNames) {
-        for (String className : classNames) {
-            combinedIndexBuildItem.getIndex().getAllKnownImplementors(DotName.createSimple(className)).stream()
+    private static void registerAllImplementations(CombinedIndexBuildItem combinedIndexBuildItem, BuildProducer<ReflectiveHierarchyBuildItem> reflectiveHierarchyClass, Class<?>... classNames) {
+        for (Class<?> klass : classNames) {
+            combinedIndexBuildItem.getIndex().getAllKnownImplementors(DotName.createSimple(klass.getName())).stream()
               .map(ci -> new ReflectiveHierarchyBuildItem(Type.create(ci.name(), Type.Kind.CLASS)))
               .forEach(reflectiveHierarchyClass::produce);
         }
     }
 
-    private static void registerAllSubclasses(CombinedIndexBuildItem combinedIndexBuildItem, BuildProducer<ReflectiveHierarchyBuildItem> reflectiveHierarchyClass, String... classNames) {
-        for (String className : classNames) {
-            combinedIndexBuildItem.getIndex().getAllKnownSubclasses(DotName.createSimple(className)).stream()
+    private static void registerAllSubclasses(CombinedIndexBuildItem combinedIndexBuildItem, BuildProducer<ReflectiveHierarchyBuildItem> reflectiveHierarchyClass, Class<?>... classNames) {
+        for (Class<?> klass : classNames) {
+            combinedIndexBuildItem.getIndex().getAllKnownSubclasses(DotName.createSimple(klass.getName())).stream()
               .map(ci -> new ReflectiveHierarchyBuildItem(Type.create(ci.name(), Type.Kind.CLASS)))
               .forEach(reflectiveHierarchyClass::produce);
         }
