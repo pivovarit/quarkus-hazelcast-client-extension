@@ -94,6 +94,7 @@ class HazelcastClientProcessor {
           "com.hazelcast.map.listener.MapListener",
           "com.hazelcast.quorum.QuorumListener",
           "com.hazelcast.quorum.QuorumFunction",
+          "com.hazelcast.config.replacer.spi.ConfigReplacer",
           "com.hazelcast.client.ClientExtension",
           "com.hazelcast.client.spi.ClientProxyFactory");
 
