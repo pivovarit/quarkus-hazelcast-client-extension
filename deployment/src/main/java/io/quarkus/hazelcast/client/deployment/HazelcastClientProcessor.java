@@ -43,15 +43,13 @@ class HazelcastClientProcessor {
       BuildProducer<NativeImageResourceBundleBuildItem> bundles,
       BuildProducer<NativeImageResourceBuildItem> resources) {
         reflectiveClass.produce(new ReflectiveClassBuildItem(false, false,
-          com.sun.org.apache.xalan.internal.xsltc.trax.TransformerFactoryImpl.class,
-          com.sun.org.apache.xerces.internal.jaxp.SAXParserFactoryImpl.class,
-          com.sun.xml.bind.v2.ContextFactory.class,
-          com.sun.org.apache.xpath.internal.functions.FuncNot.class,
-          com.sun.org.apache.xerces.internal.impl.dv.xs.SchemaDVFactoryImpl.class,
-          com.sun.xml.internal.stream.XMLInputFactoryImpl.class));
-
-        reflectiveClass.produce(new ReflectiveClassBuildItem(false, false,
           "com.sun.org.apache.xerces.internal.jaxp.DocumentBuilderFactoryImpl",
+          "com.sun.org.apache.xerces.internal.jaxp.SAXParserFactoryImpl",
+          "com.sun.xml.bind.v2.ContextFactory",
+          "com.sun.xml.internal.stream.XMLInputFactoryImpl",
+          "com.sun.org.apache.xpath.internal.functions.FuncNot",
+          "com.sun.org.apache.xalan.internal.xsltc.trax.TransformerFactoryImpl",
+          "com.sun.org.apache.xerces.internal.impl.dv.xs.SchemaDVFactoryImpl",
           "com.sun.org.apache.xerces.internal.jaxp.datatype.DatatypeFactoryImpl"));
 
         reflectiveClass.produce(new ReflectiveClassBuildItem(false, false,"com.sun.xml.internal.bind.v2.ContextFactory"));
