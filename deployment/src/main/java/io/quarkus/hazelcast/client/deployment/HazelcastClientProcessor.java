@@ -2,6 +2,7 @@ package io.quarkus.hazelcast.client.deployment;
 
 import com.hazelcast.config.EventJournalConfig;
 import com.hazelcast.config.MerkleTreeConfig;
+import com.hazelcast.config.replacer.spi.ConfigReplacer;
 import com.hazelcast.nio.serialization.DataSerializable;
 import io.quarkus.arc.deployment.AdditionalBeanBuildItem;
 import io.quarkus.deployment.annotations.BuildProducer;
@@ -93,6 +94,7 @@ class HazelcastClientProcessor {
           "com.hazelcast.core.ItemListener",
           "com.hazelcast.map.listener.MapListener",
           "com.hazelcast.quorum.QuorumListener",
+          ConfigReplacer.class.getName(),
           "com.hazelcast.quorum.QuorumFunction",
           "com.hazelcast.config.replacer.spi.ConfigReplacer",
           "com.hazelcast.client.ClientExtension",
