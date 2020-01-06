@@ -4,8 +4,6 @@ import com.hazelcast.client.cache.impl.HazelcastClientCachingProvider;
 import com.hazelcast.config.EventJournalConfig;
 import com.hazelcast.config.MerkleTreeConfig;
 import com.hazelcast.nio.serialization.DataSerializable;
-import com.sun.org.apache.xerces.internal.jaxp.DocumentBuilderFactoryImpl;
-import com.sun.org.apache.xerces.internal.jaxp.datatype.DatatypeFactoryImpl;
 import io.quarkus.arc.deployment.AdditionalBeanBuildItem;
 import io.quarkus.deployment.annotations.BuildProducer;
 import io.quarkus.deployment.annotations.BuildStep;
@@ -45,14 +43,16 @@ class HazelcastClientProcessor {
       BuildProducer<NativeImageResourceBundleBuildItem> bundles,
       BuildProducer<NativeImageResourceBuildItem> resources) {
         reflectiveClass.produce(new ReflectiveClassBuildItem(false, false,
-          DocumentBuilderFactoryImpl.class,
-          DatatypeFactoryImpl.class,
           com.sun.org.apache.xalan.internal.xsltc.trax.TransformerFactoryImpl.class,
           com.sun.org.apache.xerces.internal.jaxp.SAXParserFactoryImpl.class,
           com.sun.xml.bind.v2.ContextFactory.class,
           com.sun.org.apache.xpath.internal.functions.FuncNot.class,
           com.sun.org.apache.xerces.internal.impl.dv.xs.SchemaDVFactoryImpl.class,
           com.sun.xml.internal.stream.XMLInputFactoryImpl.class));
+
+        reflectiveClass.produce(new ReflectiveClassBuildItem(false, false,
+          "com.sun.org.apache.xerces.internal.jaxp.DocumentBuilderFactoryImpl",
+          "com.sun.org.apache.xerces.internal.jaxp.datatype.DatatypeFactoryImpl"));
 
         reflectiveClass.produce(new ReflectiveClassBuildItem(false, false,"com.sun.xml.internal.bind.v2.ContextFactory"));
 
