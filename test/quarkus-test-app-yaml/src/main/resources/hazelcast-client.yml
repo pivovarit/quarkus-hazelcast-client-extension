@@ -42,3 +42,6 @@ hazelcast-client:
     data-serializable-factories:
       - factory-id: 42
         class-name: guides.hazelcast.quarkus.DataSerializableWrapperFactory
+    portable-factories:
+      - factory-id: 2
+        class-name: guides.hazelcast.quarkus.ExamplePortableFactory
