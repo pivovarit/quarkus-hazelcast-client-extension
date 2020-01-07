@@ -28,6 +28,10 @@ hazelcast-client:
       linger-seconds: 3
       buffer-size: 128
 
+  listeners:
+    - guides.hazelcast.quarkus.CustomMembershipListener
+    - guides.hazelcast.quarkus.CustomMigrationListener
+
   serialization:
     portable-version: 3
     use-native-byte-order: true

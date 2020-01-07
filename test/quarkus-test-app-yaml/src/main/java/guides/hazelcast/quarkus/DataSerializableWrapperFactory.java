@@ -1,6 +1,5 @@
 package guides.hazelcast.quarkus;
 
-import com.hazelcast.nio.serialization.DataSerializableFactory;
 import com.hazelcast.nio.serialization.IdentifiedDataSerializable;
 
 class DataSerializableWrapperFactory implements com.hazelcast.nio.serialization.DataSerializableFactory {
