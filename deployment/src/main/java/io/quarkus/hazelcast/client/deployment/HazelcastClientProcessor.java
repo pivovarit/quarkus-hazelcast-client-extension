@@ -94,7 +94,6 @@ class HazelcastClientProcessor {
           PortableFactory.class,
           com.hazelcast.nio.SocketInterceptor.class,
           com.hazelcast.nio.ssl.SSLContextFactory.class,
-          com.hazelcast.nio.serialization.Serializer.class,
           com.hazelcast.spi.discovery.DiscoveryStrategy.class,
           com.hazelcast.security.ICredentialsFactory.class,
           com.hazelcast.core.MembershipListener.class,

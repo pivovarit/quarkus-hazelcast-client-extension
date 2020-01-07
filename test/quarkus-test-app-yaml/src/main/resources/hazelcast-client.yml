@@ -45,3 +45,6 @@ hazelcast-client:
     portable-factories:
       - factory-id: 2
         class-name: guides.hazelcast.quarkus.ExamplePortableFactory
+    serializers:
+      - type-class: guides.hazelcast.quarkus.CommandResponse
+        class-name: guides.hazelcast.quarkus.CustomSerializer
