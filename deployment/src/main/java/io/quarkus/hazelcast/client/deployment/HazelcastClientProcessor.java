@@ -8,6 +8,7 @@ import com.hazelcast.config.replacer.PropertyReplacer;
 import com.hazelcast.nio.serialization.DataSerializable;
 import com.hazelcast.nio.serialization.DataSerializableFactory;
 import com.hazelcast.nio.serialization.PortableFactory;
+import com.hazelcast.nio.serialization.Serializer;
 import io.quarkus.arc.deployment.AdditionalBeanBuildItem;
 import io.quarkus.deployment.annotations.BuildProducer;
 import io.quarkus.deployment.annotations.BuildStep;
@@ -92,6 +93,7 @@ class HazelcastClientProcessor {
           DataSerializable.class,
           DataSerializableFactory.class,
           PortableFactory.class,
+          Serializer.class,
           com.hazelcast.nio.SocketInterceptor.class,
           com.hazelcast.nio.ssl.SSLContextFactory.class,
           com.hazelcast.spi.discovery.DiscoveryStrategy.class,
