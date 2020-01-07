@@ -6,6 +6,7 @@ import com.hazelcast.config.MerkleTreeConfig;
 import com.hazelcast.config.replacer.EncryptionReplacer;
 import com.hazelcast.config.replacer.PropertyReplacer;
 import com.hazelcast.nio.serialization.DataSerializable;
+import com.hazelcast.nio.serialization.DataSerializableFactory;
 import io.quarkus.arc.deployment.AdditionalBeanBuildItem;
 import io.quarkus.deployment.annotations.BuildProducer;
 import io.quarkus.deployment.annotations.BuildStep;
@@ -88,6 +89,7 @@ class HazelcastClientProcessor {
 
         registerAllImplementations(combinedIndexBuildItem, reflectiveHierarchyClass,
           DataSerializable.class,
+          DataSerializableFactory.class,
           com.hazelcast.nio.SocketInterceptor.class,
           com.hazelcast.nio.ssl.SSLContextFactory.class,
           com.hazelcast.nio.serialization.Serializer.class,
