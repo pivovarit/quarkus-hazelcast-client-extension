@@ -27,3 +27,14 @@ hazelcast-client:
       reuse-address: true
       linger-seconds: 3
       buffer-size: 128
+
+  serialization:
+    portable-version: 3
+    use-native-byte-order: true
+    byte-order: BIG_ENDIAN
+    enable-compression: false
+    enable-shared-object: true
+    allow-unsafe: false
+    data-serializable-factories:
+      - factory-id: 42
+        class-name: guides.hazelcast.quarkus.DataSerializableWrapperFactory
