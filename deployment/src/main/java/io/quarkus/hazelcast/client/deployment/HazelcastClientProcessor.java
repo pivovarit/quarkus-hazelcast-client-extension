@@ -90,13 +90,13 @@ class HazelcastClientProcessor {
     }
 
     @BuildStep
-    void enableJni(BuildProducer<JniBuildItem> jni, BuildProducer<RuntimeReinitializedClassBuildItem> reinitialized) {
+    void enableJni(
+      BuildProducer<JniBuildItem> jni,
+      BuildProducer<RuntimeReinitializedClassBuildItem> reinitialized,
+      BuildProducer<NativeImageResourceBuildItem> resources) {
+        resources.produce(new NativeImageResourceBuildItem("lib/linux-x86/libicmp_helper.so", "lib/linux-x86_64/libicmp_helper.so"));
         reinitialized.produce(new RuntimeReinitializedClassBuildItem(ICMPHelper.class.getName()));
         jni.produce(new JniBuildItem());
-    }
-
-    private void enableLoadOfNativeLibs(BuildProducer<RuntimeReinitializedClassBuildItem> reinitialized) {
-        reinitialized.produce(new RuntimeReinitializedClassBuildItem("org.rocksdb.RocksDB"));
     }
 
     @BuildStep
