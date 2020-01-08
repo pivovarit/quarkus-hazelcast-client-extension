@@ -91,7 +91,8 @@ class HazelcastClientProcessor {
         registerAllImplementations(combinedIndexBuildItem, reflectiveHierarchyClass,
           DataSerializable.class,
           DataSerializableFactory.class,
-          PortableFactory.class);
+          PortableFactory.class,
+          com.hazelcast.nio.serialization.Serializer.class);
     }
 
     @BuildStep
@@ -109,7 +110,6 @@ class HazelcastClientProcessor {
 
         registerAllImplementations(combinedIndexBuildItem, reflectiveHierarchyClass,
           com.hazelcast.nio.SocketInterceptor.class,
-          com.hazelcast.nio.serialization.Serializer.class,
           com.hazelcast.spi.discovery.DiscoveryStrategy.class,
           com.hazelcast.security.ICredentialsFactory.class,
           com.hazelcast.core.MembershipListener.class,
