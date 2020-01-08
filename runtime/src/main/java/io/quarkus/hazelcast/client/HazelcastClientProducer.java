@@ -12,6 +12,7 @@ import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.inject.Produces;
 import javax.inject.Singleton;
 import java.util.Arrays;
+import java.util.Optional;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Stream;
 
@@ -29,17 +30,20 @@ public class HazelcastClientProducer {
     @Singleton
     @DefaultBean
     public ClientConfig hazelcastConfigClientInstance() {
+        return getClientConfig().orElseGet(this::fromApplicationProperties);
+    }
+
+    private Optional<ClientConfig> getClientConfig() {
         validateConfigFiles();
 
         if (ymlConfigPresent) {
-            return new ClientClasspathYamlConfig("hazelcast-client.yml");
+            return Optional.of(new ClientClasspathYamlConfig("hazelcast-client.yml"));
         } else if (yamlConfigPresent) {
-            return new ClientClasspathYamlConfig("hazelcast-client.yaml");
+            return Optional.of(new ClientClasspathYamlConfig("hazelcast-client.yaml"));
         } else if (xmlConfigPresent) {
-            return new ClientClasspathXmlConfig("hazelcast-client.xml");
+            return Optional.of(new ClientClasspathXmlConfig("hazelcast-client.xml"));
         }
-
-        return fromApplicationProperties();
+        return Optional.empty();
     }
 
     private void validateConfigFiles() {
