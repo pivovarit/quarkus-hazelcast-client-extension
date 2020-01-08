@@ -39,7 +39,7 @@ public class HazelcastClientProducer {
     @Produces
     @Singleton
     @DefaultBean
-    public ClientConfig hazelcastConfigClientInstance() throws URISyntaxException {
+    public ClientConfig hazelcastConfigClientInstance() {
         if (ymlConfigPresent) {
             return new ClientClasspathYamlConfig("hazelcast-client.yml");
         } else if (yamlConfigPresent) {
