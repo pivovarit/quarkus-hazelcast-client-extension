@@ -29,12 +29,12 @@ hazelcast-client:
       buffer-size: 128
 
     icmp-ping:
-      enabled: false
+      enabled: true
       timeout-milliseconds: 2000
       interval-milliseconds: 3000
       ttl: 100
       max-attempts: 5
-      echo-fail-fast-on-startup: false
+      echo-fail-fast-on-startup: true
 
   listeners:
     - guides.hazelcast.quarkus.CustomMembershipListener
