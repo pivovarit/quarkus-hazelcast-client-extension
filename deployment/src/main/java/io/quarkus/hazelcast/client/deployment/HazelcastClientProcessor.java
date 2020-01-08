@@ -16,6 +16,7 @@ import com.hazelcast.nio.serialization.PortableFactory;
 import com.hazelcast.nio.ssl.BasicSSLContextFactory;
 import com.hazelcast.spi.discovery.DiscoveryStrategy;
 import com.hazelcast.spi.discovery.multicast.MulticastDiscoveryStrategy;
+import com.hazelcast.util.ICMPHelper;
 import io.quarkus.arc.deployment.AdditionalBeanBuildItem;
 import io.quarkus.deployment.annotations.BuildProducer;
 import io.quarkus.deployment.annotations.BuildStep;
@@ -23,10 +24,12 @@ import io.quarkus.deployment.annotations.ExecutionTime;
 import io.quarkus.deployment.annotations.Record;
 import io.quarkus.deployment.builditem.CombinedIndexBuildItem;
 import io.quarkus.deployment.builditem.FeatureBuildItem;
+import io.quarkus.deployment.builditem.JniBuildItem;
 import io.quarkus.deployment.builditem.nativeimage.NativeImageResourceBuildItem;
 import io.quarkus.deployment.builditem.nativeimage.NativeImageResourceBundleBuildItem;
 import io.quarkus.deployment.builditem.nativeimage.ReflectiveClassBuildItem;
 import io.quarkus.deployment.builditem.nativeimage.ReflectiveHierarchyBuildItem;
+import io.quarkus.deployment.builditem.nativeimage.RuntimeReinitializedClassBuildItem;
 import io.quarkus.hazelcast.client.HazelcastClientConfig;
 import io.quarkus.hazelcast.client.HazelcastClientProducer;
 import io.quarkus.hazelcast.client.HazelcastRecorder;
@@ -84,6 +87,16 @@ class HazelcastClientProcessor {
           MerkleTreeConfig.class,
           EncryptionReplacer.class,
           PropertyReplacer.class));
+    }
+
+    @BuildStep
+    void enableJni(
+      BuildProducer<JniBuildItem> jni,
+      BuildProducer<RuntimeReinitializedClassBuildItem> reinitialized,
+      BuildProducer<NativeImageResourceBuildItem> resources) {
+        resources.produce(new NativeImageResourceBuildItem("lib/linux-x86/libicmp_helper.so", "lib/linux-x86_64/libicmp_helper.so"));
+        reinitialized.produce(new RuntimeReinitializedClassBuildItem(ICMPHelper.class.getName()));
+        jni.produce(new JniBuildItem());
     }
 
     @BuildStep
