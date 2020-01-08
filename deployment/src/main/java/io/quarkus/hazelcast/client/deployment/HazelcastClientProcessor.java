@@ -23,6 +23,7 @@ import io.quarkus.deployment.annotations.ExecutionTime;
 import io.quarkus.deployment.annotations.Record;
 import io.quarkus.deployment.builditem.CombinedIndexBuildItem;
 import io.quarkus.deployment.builditem.FeatureBuildItem;
+import io.quarkus.deployment.builditem.JniBuildItem;
 import io.quarkus.deployment.builditem.nativeimage.NativeImageResourceBuildItem;
 import io.quarkus.deployment.builditem.nativeimage.NativeImageResourceBundleBuildItem;
 import io.quarkus.deployment.builditem.nativeimage.ReflectiveClassBuildItem;
@@ -84,6 +85,12 @@ class HazelcastClientProcessor {
           MerkleTreeConfig.class,
           EncryptionReplacer.class,
           PropertyReplacer.class));
+    }
+
+    @BuildStep
+    void enableJni(BuildProducer<JniBuildItem> jni) {
+        // enable JNI
+        jni.produce(new JniBuildItem());
     }
 
     @BuildStep

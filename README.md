@@ -45,5 +45,6 @@ In order to configure client using the `hazelcast-client.yml` file, place the co
     
 Configuration entries from `hazelcast-client.yml` override all `quarkus.hazelcast-client.*` entries.
 
-## Limitations
-- Default serialization is not supported in native mode
+## Limitations (native mode)
+- Default Java serialization is not supported
+- ICMP ping is not supported
