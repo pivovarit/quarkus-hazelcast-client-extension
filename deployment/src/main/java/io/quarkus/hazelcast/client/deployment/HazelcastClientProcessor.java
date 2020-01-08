@@ -16,6 +16,7 @@ import com.hazelcast.nio.serialization.PortableFactory;
 import com.hazelcast.nio.ssl.BasicSSLContextFactory;
 import com.hazelcast.spi.discovery.DiscoveryStrategy;
 import com.hazelcast.spi.discovery.multicast.MulticastDiscoveryStrategy;
+import com.hazelcast.util.ICMPHelper;
 import io.quarkus.arc.deployment.AdditionalBeanBuildItem;
 import io.quarkus.deployment.annotations.BuildProducer;
 import io.quarkus.deployment.annotations.BuildStep;
@@ -28,6 +29,7 @@ import io.quarkus.deployment.builditem.nativeimage.NativeImageResourceBuildItem;
 import io.quarkus.deployment.builditem.nativeimage.NativeImageResourceBundleBuildItem;
 import io.quarkus.deployment.builditem.nativeimage.ReflectiveClassBuildItem;
 import io.quarkus.deployment.builditem.nativeimage.ReflectiveHierarchyBuildItem;
+import io.quarkus.deployment.builditem.nativeimage.RuntimeReinitializedClassBuildItem;
 import io.quarkus.hazelcast.client.HazelcastClientConfig;
 import io.quarkus.hazelcast.client.HazelcastClientProducer;
 import io.quarkus.hazelcast.client.HazelcastRecorder;
@@ -88,9 +90,13 @@ class HazelcastClientProcessor {
     }
 
     @BuildStep
-    void enableJni(BuildProducer<JniBuildItem> jni) {
-        // enable JNI
+    void enableJni(BuildProducer<JniBuildItem> jni, BuildProducer<RuntimeReinitializedClassBuildItem> reinitialized) {
+        reinitialized.produce(new RuntimeReinitializedClassBuildItem(ICMPHelper.class.getName()));
         jni.produce(new JniBuildItem());
+    }
+
+    private void enableLoadOfNativeLibs(BuildProducer<RuntimeReinitializedClassBuildItem> reinitialized) {
+        reinitialized.produce(new RuntimeReinitializedClassBuildItem("org.rocksdb.RocksDB"));
     }
 
     @BuildStep
