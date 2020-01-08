@@ -13,11 +13,14 @@ import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.inject.Produces;
 import javax.inject.Singleton;
 import java.io.File;
+import java.io.InputStream;
 import java.net.URISyntaxException;
+import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Arrays;
+import java.util.Scanner;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Function;
 import java.util.function.Supplier;
@@ -45,8 +48,10 @@ public class HazelcastClientProducer {
     }
 
     private boolean exists(String s) throws URISyntaxException {
-        return Files.exists(Paths.get(Thread.currentThread().getContextClassLoader().getResource(s).toURI()
-        ));
+        InputStream stream = HazelcastClientProducer.class.getResourceAsStream(s);
+        try (Scanner scanner = new Scanner(stream, "UTF-8")) {
+            return !scanner.useDelimiter("\\A").next().isEmpty();
+        }
     }
 
     @Produces
