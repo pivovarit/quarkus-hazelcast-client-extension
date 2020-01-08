@@ -39,9 +39,7 @@ The default location for `hazelcast-client.yml` is `src/main/resources`. If you 
 
 #### Configuration using `hazelcast-client.yml`
 
-In order to configure client using the `hazelcast-client.yml` file, place the configuration file in `src/main/resources` and add the following Quarkus configuration entry:
-
-    quarkus.hazelcast-client.config-source=yaml
+In order to configure the client using the `hazelcast-client.yml` file, place the configuration file in the `src/main/resources` directory.
     
 Configuration entries from `hazelcast-client.yml` override all `quarkus.hazelcast-client.*` entries.
 
