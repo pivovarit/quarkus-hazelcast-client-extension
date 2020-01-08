@@ -1,13 +1,21 @@
 package io.quarkus.hazelcast.client.deployment;
 
+import com.hazelcast.aws.AwsDiscoveryStrategy;
 import com.hazelcast.client.cache.impl.HazelcastClientCachingProvider;
+import com.hazelcast.client.connection.nio.DefaultCredentialsFactory;
 import com.hazelcast.config.EventJournalConfig;
 import com.hazelcast.config.MerkleTreeConfig;
 import com.hazelcast.config.replacer.EncryptionReplacer;
 import com.hazelcast.config.replacer.PropertyReplacer;
+import com.hazelcast.config.replacer.spi.ConfigReplacer;
+import com.hazelcast.gcp.GcpDiscoveryStrategy;
+import com.hazelcast.kubernetes.HazelcastKubernetesDiscoveryStrategyFactory;
 import com.hazelcast.nio.serialization.DataSerializable;
 import com.hazelcast.nio.serialization.DataSerializableFactory;
 import com.hazelcast.nio.serialization.PortableFactory;
+import com.hazelcast.nio.ssl.BasicSSLContextFactory;
+import com.hazelcast.spi.discovery.DiscoveryStrategy;
+import com.hazelcast.spi.discovery.multicast.MulticastDiscoveryStrategy;
 import io.quarkus.arc.deployment.AdditionalBeanBuildItem;
 import io.quarkus.deployment.annotations.BuildProducer;
 import io.quarkus.deployment.annotations.BuildStep;
@@ -84,19 +92,63 @@ class HazelcastClientProcessor {
     }
 
     @BuildStep
+    void registerUserImplementationsOfSerializableUtilities(
+      CombinedIndexBuildItem combinedIndexBuildItem,
+      BuildProducer<ReflectiveHierarchyBuildItem> reflectiveHierarchyClass) {
+        registerAllImplementations(combinedIndexBuildItem, reflectiveHierarchyClass,
+          DataSerializable.class,
+          DataSerializableFactory.class,
+          PortableFactory.class,
+          com.hazelcast.nio.serialization.Serializer.class);
+    }
+
+    @BuildStep
+    void registerSSLUtilities(
+      CombinedIndexBuildItem combinedIndexBuildItem, BuildProducer<ReflectiveClassBuildItem> reflectiveClass,
+      BuildProducer<ReflectiveHierarchyBuildItem> reflectiveHierarchyClass) {
+        registerAllImplementations(combinedIndexBuildItem, reflectiveHierarchyClass, com.hazelcast.nio.ssl.SSLContextFactory.class);
+        reflectiveClass.produce(new ReflectiveClassBuildItem(false, false, BasicSSLContextFactory.class));
+    }
+
+    @BuildStep
+    void registerCustomCredentialFactories(
+      CombinedIndexBuildItem combinedIndexBuildItem, BuildProducer<ReflectiveClassBuildItem> reflectiveClass,
+      BuildProducer<ReflectiveHierarchyBuildItem> reflectiveHierarchyClass) {
+        registerAllImplementations(combinedIndexBuildItem, reflectiveHierarchyClass, com.hazelcast.security.ICredentialsFactory.class);
+        reflectiveClass.produce(new ReflectiveClassBuildItem(false, false, DefaultCredentialsFactory.class));
+    }
+
+    @BuildStep
+    void registerCustomDiscoveryStrategiesClasses(
+      CombinedIndexBuildItem combinedIndexBuildItem, BuildProducer<ReflectiveClassBuildItem> reflectiveClass,
+      BuildProducer<ReflectiveHierarchyBuildItem> reflectiveHierarchyClass) {
+
+        registerAllImplementations(combinedIndexBuildItem, reflectiveHierarchyClass, DiscoveryStrategy.class);
+        reflectiveClass.produce(new ReflectiveClassBuildItem(false, false,
+          MulticastDiscoveryStrategy.class,
+          AwsDiscoveryStrategy.class,
+          GcpDiscoveryStrategy.class,
+          HazelcastKubernetesDiscoveryStrategyFactory.class));
+    }
+
+    @BuildStep
+    void registerCustomConfigReplacerClasses(
+      CombinedIndexBuildItem combinedIndexBuildItem, BuildProducer<ReflectiveClassBuildItem> reflectiveClass,
+      BuildProducer<ReflectiveHierarchyBuildItem> reflectiveHierarchyClass) {
+
+        registerAllImplementations(combinedIndexBuildItem, reflectiveHierarchyClass,  ConfigReplacer.class);
+        reflectiveClass.produce(new ReflectiveClassBuildItem(false, false,
+         EncryptionReplacer.class,
+         PropertyReplacer.class));
+    }
+
+    @BuildStep
     void registerCustomImplementationClasses(
       CombinedIndexBuildItem combinedIndexBuildItem,
       BuildProducer<ReflectiveHierarchyBuildItem> reflectiveHierarchyClass) {
 
         registerAllImplementations(combinedIndexBuildItem, reflectiveHierarchyClass,
-          DataSerializable.class,
-          DataSerializableFactory.class,
-          PortableFactory.class,
           com.hazelcast.nio.SocketInterceptor.class,
-          com.hazelcast.nio.ssl.SSLContextFactory.class,
-          com.hazelcast.nio.serialization.Serializer.class,
-          com.hazelcast.spi.discovery.DiscoveryStrategy.class,
-          com.hazelcast.security.ICredentialsFactory.class,
           com.hazelcast.core.MembershipListener.class,
           com.hazelcast.core.MigrationListener.class,
           com.hazelcast.core.EntryListener.class,
@@ -105,7 +157,6 @@ class HazelcastClientProcessor {
           com.hazelcast.map.listener.MapListener.class,
           com.hazelcast.quorum.QuorumListener.class,
           com.hazelcast.quorum.QuorumFunction.class,
-          com.hazelcast.config.replacer.spi.ConfigReplacer.class,
           com.hazelcast.client.ClientExtension.class,
           com.hazelcast.client.spi.ClientProxyFactory.class);
 
