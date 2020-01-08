@@ -32,15 +32,19 @@ public class HazelcastClientProducer {
 
     private HazelcastClientConfig hazelcastClientConfig;
 
+    private Boolean ymlConfigPresent = null;
+    private Boolean yamlConfigPresent = null;
+    private Boolean xmlConfigPresent = null;
+
     @Produces
     @Singleton
     @DefaultBean
     public ClientConfig hazelcastConfigClientInstance() throws URISyntaxException {
-        if (exists("hazelcast-client.yml")) {
+        if (ymlConfigPresent) {
             return new ClientClasspathYamlConfig("hazelcast-client.yml");
-        } else if (exists("hazelcast-client.yaml")) {
+        } else if (yamlConfigPresent) {
             return new ClientClasspathYamlConfig("hazelcast-client.yaml");
-        } else if (exists("hazelcast-client.xml")) {
+        } else if (xmlConfigPresent) {
             return new ClientClasspathXmlConfig("hazelcast-client.xml");
         }
 
@@ -53,6 +57,7 @@ public class HazelcastClientProducer {
             return !scanner.useDelimiter("\\A").next().isEmpty();
         }
     }
+
 
     @Produces
     @Singleton
@@ -140,5 +145,17 @@ public class HazelcastClientProducer {
 
     public void setHazelcastClientConfig(HazelcastClientConfig hazelcastClientConfig) {
         this.hazelcastClientConfig = hazelcastClientConfig;
+    }
+
+    public void setYmlConfigPresent(boolean ymlConfigPresent) {
+        this.ymlConfigPresent = ymlConfigPresent;
+    }
+
+    public void setYamlConfigPresent(boolean yamlConfigPresent) {
+        this.yamlConfigPresent = yamlConfigPresent;
+    }
+
+    public void setXmlConfigPresent(boolean xmlConfigPresent) {
+        this.xmlConfigPresent = xmlConfigPresent;
     }
 }
