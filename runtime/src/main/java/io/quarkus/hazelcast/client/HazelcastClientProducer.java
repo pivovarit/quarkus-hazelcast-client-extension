@@ -21,39 +21,13 @@ public class HazelcastClientProducer {
     private final AtomicReference<HazelcastInstance> instance = new AtomicReference<>(null);
 
     private HazelcastClientConfig hazelcastClientConfig;
-
-    private Boolean ymlConfigPresent = null;
-    private Boolean yamlConfigPresent = null;
-    private Boolean xmlConfigPresent = null;
+    private ClientConfig clientConfig;
 
     @Produces
     @Singleton
     @DefaultBean
     public ClientConfig hazelcastConfigClientInstance() {
-        return getClientConfig().orElseGet(this::fromApplicationProperties);
-    }
-
-    private Optional<ClientConfig> getClientConfig() {
-        validateConfigFiles();
-
-        if (ymlConfigPresent) {
-            return Optional.of(new ClientClasspathYamlConfig("hazelcast-client.yml"));
-        } else if (yamlConfigPresent) {
-            return Optional.of(new ClientClasspathYamlConfig("hazelcast-client.yaml"));
-        } else if (xmlConfigPresent) {
-            return Optional.of(new ClientClasspathXmlConfig("hazelcast-client.xml"));
-        }
-        return Optional.empty();
-    }
-
-    private void validateConfigFiles() {
-        int sum = Stream.of(ymlConfigPresent, yamlConfigPresent, xmlConfigPresent)
-          .mapToInt(b -> b ? 1 : 0)
-          .sum();
-
-        if (sum > 1) {
-            throw new RuntimeException("max one configuration file is supported");
-        }
+        return clientConfig != null ? clientConfig : fromApplicationProperties();
     }
 
     @Produces
@@ -144,15 +118,7 @@ public class HazelcastClientProducer {
         this.hazelcastClientConfig = hazelcastClientConfig;
     }
 
-    public void setYmlConfigPresent(boolean ymlConfigPresent) {
-        this.ymlConfigPresent = ymlConfigPresent;
-    }
-
-    public void setYamlConfigPresent(boolean yamlConfigPresent) {
-        this.yamlConfigPresent = yamlConfigPresent;
-    }
-
-    public void setXmlConfigPresent(boolean xmlConfigPresent) {
-        this.xmlConfigPresent = xmlConfigPresent;
+    public void setClientConfig(ClientConfig clientConfig) {
+        this.clientConfig = clientConfig;
     }
 }
