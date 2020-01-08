@@ -4,6 +4,7 @@ import com.hazelcast.client.HazelcastClient;
 import com.hazelcast.client.config.ClientClasspathXmlConfig;
 import com.hazelcast.client.config.ClientClasspathYamlConfig;
 import com.hazelcast.client.config.ClientConfig;
+import com.hazelcast.core.Client;
 import com.hazelcast.core.HazelcastInstance;
 import io.quarkus.arc.DefaultBean;
 
@@ -11,6 +12,7 @@ import javax.annotation.PreDestroy;
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.inject.Produces;
 import javax.inject.Singleton;
+import java.io.File;
 import java.util.Arrays;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Function;
@@ -27,9 +29,15 @@ public class HazelcastClientProducer {
     @Singleton
     @DefaultBean
     public ClientConfig hazelcastConfigClientInstance() {
-        return hazelcastClientConfig.configSource
-          .map(toHazelcastClientConfig())
-          .orElseGet(fromApplicationProperties());
+        if (new File("hazelcast-client.yml").exists()) {
+            return new ClientClasspathYamlConfig("hazelcast-client.yml");
+        } else if (new File("hazelcast-client.yaml").exists()) {
+            return new ClientClasspathYamlConfig("hazelcast-client.yaml");
+        } else if (new File("hazelcast-client.xml").exists()) {
+            return new ClientClasspathXmlConfig("hazelcast-client.xml");
+        }
+
+        return fromApplicationProperties();
     }
 
     @Produces
@@ -41,39 +49,23 @@ public class HazelcastClientProducer {
         return instance;
     }
 
-    private Supplier<ClientConfig> fromApplicationProperties() {
-        return () -> {
-            ClientConfig clientConfig = new ClientConfig();
+    private ClientConfig fromApplicationProperties() {
+        ClientConfig clientConfig = new ClientConfig();
 
-            setClusterAddress(clientConfig);
-            setGroupName(clientConfig);
-            setLabels(clientConfig);
+        setClusterAddress(clientConfig);
+        setGroupName(clientConfig);
+        setLabels(clientConfig);
 
-            setOutboundPorts(clientConfig);
-            setOutboundPortDefinitions(clientConfig);
+        setOutboundPorts(clientConfig);
+        setOutboundPortDefinitions(clientConfig);
 
-            setConnectionTimeout(clientConfig);
-            setConnectionAttemptLimit(clientConfig);
-            setConnectionAttemptPeriod(clientConfig);
+        setConnectionTimeout(clientConfig);
+        setConnectionAttemptLimit(clientConfig);
+        setConnectionAttemptPeriod(clientConfig);
 
-            setExecutorPoolSize(clientConfig);
+        setExecutorPoolSize(clientConfig);
 
-            return clientConfig;
-        };
-    }
-
-    private static Function<String, ClientConfig> toHazelcastClientConfig() {
-        return source -> {
-            switch (source) {
-                case "yaml":
-                case "yml":
-                    return new ClientClasspathYamlConfig("hazelcast-client.yml");
-                case "xml":
-                    return new ClientClasspathXmlConfig("hazelcast-client.xml");
-                default:
-                    throw new IllegalStateException(String.format("Config source: [%s] is not supported", source));
-            }
-        };
+        return clientConfig;
     }
 
     private void setExecutorPoolSize(ClientConfig clientConfig) {
