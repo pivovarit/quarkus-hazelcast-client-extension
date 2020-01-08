@@ -8,6 +8,7 @@ import com.hazelcast.config.replacer.PropertyReplacer;
 import com.hazelcast.nio.serialization.DataSerializable;
 import com.hazelcast.nio.serialization.DataSerializableFactory;
 import com.hazelcast.nio.serialization.PortableFactory;
+import com.hazelcast.nio.ssl.BasicSSLContextFactory;
 import io.quarkus.arc.deployment.AdditionalBeanBuildItem;
 import io.quarkus.deployment.annotations.BuildProducer;
 import io.quarkus.deployment.annotations.BuildStep;
@@ -84,16 +85,30 @@ class HazelcastClientProcessor {
     }
 
     @BuildStep
+    void registerUserImplementationsOfSerializableUtilities(
+      CombinedIndexBuildItem combinedIndexBuildItem,
+      BuildProducer<ReflectiveHierarchyBuildItem> reflectiveHierarchyClass) {
+        registerAllImplementations(combinedIndexBuildItem, reflectiveHierarchyClass,
+          DataSerializable.class,
+          DataSerializableFactory.class,
+          PortableFactory.class);
+    }
+
+    @BuildStep
+    void registerSSLUtilities(
+      CombinedIndexBuildItem combinedIndexBuildItem, BuildProducer<ReflectiveClassBuildItem> reflectiveClass,
+      BuildProducer<ReflectiveHierarchyBuildItem> reflectiveHierarchyClass) {
+        registerAllImplementations(combinedIndexBuildItem, reflectiveHierarchyClass, com.hazelcast.nio.ssl.SSLContextFactory.class);
+        reflectiveClass.produce(new ReflectiveClassBuildItem(false, false, BasicSSLContextFactory.class));
+    }
+
+    @BuildStep
     void registerCustomImplementationClasses(
       CombinedIndexBuildItem combinedIndexBuildItem,
       BuildProducer<ReflectiveHierarchyBuildItem> reflectiveHierarchyClass) {
 
         registerAllImplementations(combinedIndexBuildItem, reflectiveHierarchyClass,
-          DataSerializable.class,
-          DataSerializableFactory.class,
-          PortableFactory.class,
           com.hazelcast.nio.SocketInterceptor.class,
-          com.hazelcast.nio.ssl.SSLContextFactory.class,
           com.hazelcast.nio.serialization.Serializer.class,
           com.hazelcast.spi.discovery.DiscoveryStrategy.class,
           com.hazelcast.security.ICredentialsFactory.class,
