@@ -13,6 +13,8 @@ import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.inject.Produces;
 import javax.inject.Singleton;
 import java.io.File;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Function;
@@ -29,15 +31,19 @@ public class HazelcastClientProducer {
     @Singleton
     @DefaultBean
     public ClientConfig hazelcastConfigClientInstance() {
-        if (new File("src/main/resources/hazelcast-client.yml").exists()) {
+        if (exists("hazelcast-client.yml")) {
             return new ClientClasspathYamlConfig("hazelcast-client.yml");
-        } else if (new File("src/main/resources/hazelcast-client.yaml").exists()) {
+        } else if (exists("hazelcast-client.yaml")) {
             return new ClientClasspathYamlConfig("hazelcast-client.yaml");
-        } else if (new File("src/main/resources/hazelcast-client.xml").exists()) {
+        } else if (exists("hazelcast-client.xml")) {
             return new ClientClasspathXmlConfig("hazelcast-client.xml");
         }
 
         return fromApplicationProperties();
+    }
+
+    private boolean exists(String s) {
+        return Files.exists(Paths.get(s)) && !Files.isDirectory(Paths.get(s));
     }
 
     @Produces
