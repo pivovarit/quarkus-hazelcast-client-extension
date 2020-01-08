@@ -45,7 +45,7 @@ public class HazelcastClientProducer {
     }
 
     private boolean exists(String s) throws URISyntaxException {
-        Path filePath = Paths.get(HazelcastClientProducer.class.getResource(s).toURI());
+        Path filePath = Paths.get(getClass().getClassLoader().getResource(s).toURI());
         return Files.exists(filePath) && !Files.isDirectory(filePath);
     }
 
