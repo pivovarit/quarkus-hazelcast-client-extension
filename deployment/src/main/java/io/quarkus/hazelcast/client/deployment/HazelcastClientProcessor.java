@@ -13,8 +13,10 @@ import com.hazelcast.kubernetes.HazelcastKubernetesDiscoveryStrategyFactory;
 import com.hazelcast.nio.serialization.DataSerializable;
 import com.hazelcast.nio.serialization.DataSerializableFactory;
 import com.hazelcast.nio.serialization.PortableFactory;
+import com.hazelcast.nio.serialization.Serializer;
 import com.hazelcast.nio.ssl.BasicSSLContextFactory;
 import com.hazelcast.spi.discovery.DiscoveryStrategy;
+import com.hazelcast.spi.discovery.NodeFilter;
 import com.hazelcast.spi.discovery.multicast.MulticastDiscoveryStrategy;
 import com.hazelcast.util.ICMPHelper;
 import io.quarkus.arc.deployment.AdditionalBeanBuildItem;
@@ -112,7 +114,7 @@ class HazelcastClientProcessor {
           DataSerializable.class,
           DataSerializableFactory.class,
           PortableFactory.class,
-          com.hazelcast.nio.serialization.Serializer.class);
+          Serializer.class);
     }
 
     @BuildStep
@@ -136,7 +138,7 @@ class HazelcastClientProcessor {
       CombinedIndexBuildItem combinedIndexBuildItem, BuildProducer<ReflectiveClassBuildItem> reflectiveClass,
       BuildProducer<ReflectiveHierarchyBuildItem> reflectiveHierarchyClass) {
 
-        registerAllImplementations(combinedIndexBuildItem, reflectiveHierarchyClass, DiscoveryStrategy.class);
+        registerAllImplementations(combinedIndexBuildItem, reflectiveHierarchyClass, DiscoveryStrategy.class, NodeFilter.class);
         reflectiveClass.produce(new ReflectiveClassBuildItem(false, false,
           MulticastDiscoveryStrategy.class,
           AwsDiscoveryStrategy.class,
