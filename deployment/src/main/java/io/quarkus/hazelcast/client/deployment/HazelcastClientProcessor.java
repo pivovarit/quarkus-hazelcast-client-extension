@@ -7,6 +7,7 @@ import com.hazelcast.config.EventJournalConfig;
 import com.hazelcast.config.MerkleTreeConfig;
 import com.hazelcast.config.replacer.EncryptionReplacer;
 import com.hazelcast.config.replacer.PropertyReplacer;
+import com.hazelcast.config.replacer.spi.ConfigReplacer;
 import com.hazelcast.gcp.GcpDiscoveryStrategy;
 import com.hazelcast.kubernetes.HazelcastKubernetesDiscoveryStrategyFactory;
 import com.hazelcast.nio.serialization.DataSerializable;
@@ -131,6 +132,17 @@ class HazelcastClientProcessor {
     }
 
     @BuildStep
+    void registerCustomConfigReplacerClasses(
+      CombinedIndexBuildItem combinedIndexBuildItem, BuildProducer<ReflectiveClassBuildItem> reflectiveClass,
+      BuildProducer<ReflectiveHierarchyBuildItem> reflectiveHierarchyClass) {
+
+        registerAllImplementations(combinedIndexBuildItem, reflectiveHierarchyClass,  ConfigReplacer.class);
+        reflectiveClass.produce(new ReflectiveClassBuildItem(false, false,
+         EncryptionReplacer.class,
+         PropertyReplacer.class));
+    }
+
+    @BuildStep
     void registerCustomImplementationClasses(
       CombinedIndexBuildItem combinedIndexBuildItem,
       BuildProducer<ReflectiveHierarchyBuildItem> reflectiveHierarchyClass) {
@@ -145,7 +157,6 @@ class HazelcastClientProcessor {
           com.hazelcast.map.listener.MapListener.class,
           com.hazelcast.quorum.QuorumListener.class,
           com.hazelcast.quorum.QuorumFunction.class,
-          com.hazelcast.config.replacer.spi.ConfigReplacer.class,
           com.hazelcast.client.ClientExtension.class,
           com.hazelcast.client.spi.ClientProxyFactory.class);
 
