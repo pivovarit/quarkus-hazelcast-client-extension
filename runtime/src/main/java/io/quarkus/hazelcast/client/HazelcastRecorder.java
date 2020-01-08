@@ -31,11 +31,7 @@ public class HazelcastRecorder {
         boolean yamlConfig = exists("hazelcast-client.yaml");
         boolean xmlConfig = exists("hazelcast-client.xml");
 
-        int sum = Stream.of(ymlConfig, yamlConfig, xmlConfig)
-          .mapToInt(b -> b ? 1 : 0)
-          .sum();
-
-        if (sum > 1) {
+        if (Stream.of(ymlConfig, yamlConfig, xmlConfig).mapToInt(b -> b ? 1 : 0).sum() > 1) {
             throw new RuntimeException("max one configuration file is supported");
         }
 
