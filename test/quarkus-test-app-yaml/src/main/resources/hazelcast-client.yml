@@ -36,6 +36,13 @@ hazelcast-client:
       max-attempts: 5
       echo-fail-fast-on-startup: true
 
+    discovery-strategies:
+      node-filter:
+        class: guides.hazelcast.quarkus.CustomNodeFilter
+      discovery-strategies:
+        - class: guides.hazelcast.quarkus.CustomDiscoveryStrategy
+          enabled: false
+
   listeners:
     - guides.hazelcast.quarkus.CustomMembershipListener
     - guides.hazelcast.quarkus.CustomMigrationListener
