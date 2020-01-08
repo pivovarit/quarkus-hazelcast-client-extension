@@ -4,7 +4,6 @@ import com.hazelcast.client.HazelcastClient;
 import com.hazelcast.client.config.ClientClasspathXmlConfig;
 import com.hazelcast.client.config.ClientClasspathYamlConfig;
 import com.hazelcast.client.config.ClientConfig;
-import com.hazelcast.core.Client;
 import com.hazelcast.core.HazelcastInstance;
 import io.quarkus.arc.DefaultBean;
 
@@ -12,18 +11,8 @@ import javax.annotation.PreDestroy;
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.inject.Produces;
 import javax.inject.Singleton;
-import java.io.File;
-import java.io.InputStream;
-import java.net.URISyntaxException;
-import java.net.URL;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.Arrays;
-import java.util.Scanner;
 import java.util.concurrent.atomic.AtomicReference;
-import java.util.function.Function;
-import java.util.function.Supplier;
 import java.util.stream.Stream;
 
 @ApplicationScoped
@@ -40,6 +29,8 @@ public class HazelcastClientProducer {
     @Singleton
     @DefaultBean
     public ClientConfig hazelcastConfigClientInstance() {
+        validateConfigFiles();
+
         if (ymlConfigPresent) {
             return new ClientClasspathYamlConfig("hazelcast-client.yml");
         } else if (yamlConfigPresent) {
@@ -51,13 +42,15 @@ public class HazelcastClientProducer {
         return fromApplicationProperties();
     }
 
-    private boolean exists(String s) throws URISyntaxException {
-        InputStream stream = HazelcastClientProducer.class.getResourceAsStream(s);
-        try (Scanner scanner = new Scanner(stream, "UTF-8")) {
-            return !scanner.useDelimiter("\\A").next().isEmpty();
+    private void validateConfigFiles() {
+        int sum = Stream.of(ymlConfigPresent, yamlConfigPresent, xmlConfigPresent)
+          .mapToInt(b -> b ? 1 : 0)
+          .sum();
+
+        if (sum > 1) {
+            throw new RuntimeException("max one configuration file is supported");
         }
     }
-
 
     @Produces
     @Singleton

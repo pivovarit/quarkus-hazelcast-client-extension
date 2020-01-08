@@ -50,6 +50,11 @@ class HazelcastClientProcessor {
     }
 
     @BuildStep
+    void registerConfigurationResources(BuildProducer<NativeImageResourceBuildItem> resources) {
+        resources.produce(new NativeImageResourceBuildItem("hazelcast-client.yml", "hazelcast-client.yaml", "hazelcast-client.xml"));
+    }
+
+    @BuildStep
     void registerDynamicallyCreatedClasses(BuildProducer<ReflectiveClassBuildItem> reflectiveClass) {
         reflectiveClass.produce(new ReflectiveClassBuildItem(false, false, HazelcastClientCachingProvider.class));
     }
@@ -99,11 +104,6 @@ class HazelcastClientProcessor {
         resources.produce(new NativeImageResourceBuildItem("lib/linux-x86/libicmp_helper.so", "lib/linux-x86_64/libicmp_helper.so"));
         reinitialized.produce(new RuntimeReinitializedClassBuildItem(ICMPHelper.class.getName()));
         jni.produce(new JniBuildItem());
-    }
-
-    @BuildStep
-    void registerConfigurationResources(BuildProducer<NativeImageResourceBuildItem> resources) {
-        resources.produce(new NativeImageResourceBuildItem("hazelcast-client.yml", "hazelcast-client.xml"));
     }
 
     @BuildStep
