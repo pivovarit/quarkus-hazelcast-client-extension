@@ -47,4 +47,3 @@ Configuration entries from `hazelcast-client.yml` override all `quarkus.hazelcas
 
 ## Limitations (native mode)
 - Default Java serialization is not supported
-- ICMP ping is not supported
