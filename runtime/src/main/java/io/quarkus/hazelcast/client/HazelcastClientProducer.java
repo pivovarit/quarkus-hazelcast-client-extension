@@ -12,9 +12,8 @@ import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.inject.Produces;
 import javax.inject.Singleton;
 import java.util.Arrays;
+import java.util.Optional;
 import java.util.concurrent.atomic.AtomicReference;
-import java.util.function.Function;
-import java.util.function.Supplier;
 import java.util.stream.Stream;
 
 @ApplicationScoped
@@ -23,13 +22,38 @@ public class HazelcastClientProducer {
 
     private HazelcastClientConfig hazelcastClientConfig;
 
+    private Boolean ymlConfigPresent = null;
+    private Boolean yamlConfigPresent = null;
+    private Boolean xmlConfigPresent = null;
+
     @Produces
     @Singleton
     @DefaultBean
     public ClientConfig hazelcastConfigClientInstance() {
-        return hazelcastClientConfig.configSource
-          .map(toHazelcastClientConfig())
-          .orElseGet(fromApplicationProperties());
+        return getClientConfig().orElseGet(this::fromApplicationProperties);
+    }
+
+    private Optional<ClientConfig> getClientConfig() {
+        validateConfigFiles();
+
+        if (ymlConfigPresent) {
+            return Optional.of(new ClientClasspathYamlConfig("hazelcast-client.yml"));
+        } else if (yamlConfigPresent) {
+            return Optional.of(new ClientClasspathYamlConfig("hazelcast-client.yaml"));
+        } else if (xmlConfigPresent) {
+            return Optional.of(new ClientClasspathXmlConfig("hazelcast-client.xml"));
+        }
+        return Optional.empty();
+    }
+
+    private void validateConfigFiles() {
+        int sum = Stream.of(ymlConfigPresent, yamlConfigPresent, xmlConfigPresent)
+          .mapToInt(b -> b ? 1 : 0)
+          .sum();
+
+        if (sum > 1) {
+            throw new RuntimeException("max one configuration file is supported");
+        }
     }
 
     @Produces
@@ -41,39 +65,23 @@ public class HazelcastClientProducer {
         return instance;
     }
 
-    private Supplier<ClientConfig> fromApplicationProperties() {
-        return () -> {
-            ClientConfig clientConfig = new ClientConfig();
+    private ClientConfig fromApplicationProperties() {
+        ClientConfig clientConfig = new ClientConfig();
 
-            setClusterAddress(clientConfig);
-            setGroupName(clientConfig);
-            setLabels(clientConfig);
+        setClusterAddress(clientConfig);
+        setGroupName(clientConfig);
+        setLabels(clientConfig);
 
-            setOutboundPorts(clientConfig);
-            setOutboundPortDefinitions(clientConfig);
+        setOutboundPorts(clientConfig);
+        setOutboundPortDefinitions(clientConfig);
 
-            setConnectionTimeout(clientConfig);
-            setConnectionAttemptLimit(clientConfig);
-            setConnectionAttemptPeriod(clientConfig);
+        setConnectionTimeout(clientConfig);
+        setConnectionAttemptLimit(clientConfig);
+        setConnectionAttemptPeriod(clientConfig);
 
-            setExecutorPoolSize(clientConfig);
+        setExecutorPoolSize(clientConfig);
 
-            return clientConfig;
-        };
-    }
-
-    private static Function<String, ClientConfig> toHazelcastClientConfig() {
-        return source -> {
-            switch (source) {
-                case "yaml":
-                case "yml":
-                    return new ClientClasspathYamlConfig("hazelcast-client.yml");
-                case "xml":
-                    return new ClientClasspathXmlConfig("hazelcast-client.xml");
-                default:
-                    throw new IllegalStateException(String.format("Config source: [%s] is not supported", source));
-            }
-        };
+        return clientConfig;
     }
 
     private void setExecutorPoolSize(ClientConfig clientConfig) {
@@ -134,5 +142,17 @@ public class HazelcastClientProducer {
 
     public void setHazelcastClientConfig(HazelcastClientConfig hazelcastClientConfig) {
         this.hazelcastClientConfig = hazelcastClientConfig;
+    }
+
+    public void setYmlConfigPresent(boolean ymlConfigPresent) {
+        this.ymlConfigPresent = ymlConfigPresent;
+    }
+
+    public void setYamlConfigPresent(boolean yamlConfigPresent) {
+        this.yamlConfigPresent = yamlConfigPresent;
+    }
+
+    public void setXmlConfigPresent(boolean xmlConfigPresent) {
+        this.xmlConfigPresent = xmlConfigPresent;
     }
 }
