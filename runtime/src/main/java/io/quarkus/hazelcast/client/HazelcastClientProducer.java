@@ -13,7 +13,9 @@ import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.inject.Produces;
 import javax.inject.Singleton;
 import java.io.File;
+import java.net.URISyntaxException;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.concurrent.atomic.AtomicReference;
@@ -30,7 +32,7 @@ public class HazelcastClientProducer {
     @Produces
     @Singleton
     @DefaultBean
-    public ClientConfig hazelcastConfigClientInstance() {
+    public ClientConfig hazelcastConfigClientInstance() throws URISyntaxException {
         if (exists("hazelcast-client.yml")) {
             return new ClientClasspathYamlConfig("hazelcast-client.yml");
         } else if (exists("hazelcast-client.yaml")) {
@@ -42,8 +44,9 @@ public class HazelcastClientProducer {
         return fromApplicationProperties();
     }
 
-    private boolean exists(String s) {
-        return Files.exists(Paths.get(s)) && !Files.isDirectory(Paths.get(s));
+    private boolean exists(String s) throws URISyntaxException {
+        Path filePath = Paths.get(HazelcastClientProducer.class.getResource(s).toURI());
+        return Files.exists(filePath) && !Files.isDirectory(filePath);
     }
 
     @Produces
