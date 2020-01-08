@@ -29,11 +29,11 @@ public class HazelcastClientProducer {
     @Singleton
     @DefaultBean
     public ClientConfig hazelcastConfigClientInstance() {
-        if (new File("hazelcast-client.yml").exists()) {
+        if (new File("src/main/resources/hazelcast-client.yml").exists()) {
             return new ClientClasspathYamlConfig("hazelcast-client.yml");
-        } else if (new File("hazelcast-client.yaml").exists()) {
+        } else if (new File("src/main/resources/hazelcast-client.yaml").exists()) {
             return new ClientClasspathYamlConfig("hazelcast-client.yaml");
-        } else if (new File("hazelcast-client.xml").exists()) {
+        } else if (new File("src/main/resources/hazelcast-client.xml").exists()) {
             return new ClientClasspathXmlConfig("hazelcast-client.xml");
         }
 
