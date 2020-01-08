@@ -137,7 +137,6 @@ class HazelcastClientProcessor {
 
         registerAllImplementations(combinedIndexBuildItem, reflectiveHierarchyClass,
           com.hazelcast.nio.SocketInterceptor.class,
-          DiscoveryStrategy.class,
           com.hazelcast.core.MembershipListener.class,
           com.hazelcast.core.MigrationListener.class,
           com.hazelcast.core.EntryListener.class,
