@@ -108,7 +108,6 @@ class HazelcastClientProcessor {
     void registerCustomCredentialFactories(
       CombinedIndexBuildItem combinedIndexBuildItem, BuildProducer<ReflectiveClassBuildItem> reflectiveClass,
       BuildProducer<ReflectiveHierarchyBuildItem> reflectiveHierarchyClass) {
-
         registerAllImplementations(combinedIndexBuildItem, reflectiveHierarchyClass, com.hazelcast.security.ICredentialsFactory.class);
         reflectiveClass.produce(new ReflectiveClassBuildItem(false, false, DefaultCredentialsFactory.class));
     }
@@ -121,7 +120,6 @@ class HazelcastClientProcessor {
         registerAllImplementations(combinedIndexBuildItem, reflectiveHierarchyClass,
           com.hazelcast.nio.SocketInterceptor.class,
           com.hazelcast.spi.discovery.DiscoveryStrategy.class,
-          com.hazelcast.security.ICredentialsFactory.class,
           com.hazelcast.core.MembershipListener.class,
           com.hazelcast.core.MigrationListener.class,
           com.hazelcast.core.EntryListener.class,
