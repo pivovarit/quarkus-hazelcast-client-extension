@@ -1,6 +1,7 @@
 package io.quarkus.hazelcast.client.deployment;
 
 import com.hazelcast.client.cache.impl.HazelcastClientCachingProvider;
+import com.hazelcast.client.connection.nio.DefaultCredentialsFactory;
 import com.hazelcast.config.EventJournalConfig;
 import com.hazelcast.config.MerkleTreeConfig;
 import com.hazelcast.config.replacer.EncryptionReplacer;
@@ -101,6 +102,15 @@ class HazelcastClientProcessor {
       BuildProducer<ReflectiveHierarchyBuildItem> reflectiveHierarchyClass) {
         registerAllImplementations(combinedIndexBuildItem, reflectiveHierarchyClass, com.hazelcast.nio.ssl.SSLContextFactory.class);
         reflectiveClass.produce(new ReflectiveClassBuildItem(false, false, BasicSSLContextFactory.class));
+    }
+
+    @BuildStep
+    void registerCustomCredentialFactories(
+      CombinedIndexBuildItem combinedIndexBuildItem, BuildProducer<ReflectiveClassBuildItem> reflectiveClass,
+      BuildProducer<ReflectiveHierarchyBuildItem> reflectiveHierarchyClass) {
+
+        registerAllImplementations(combinedIndexBuildItem, reflectiveHierarchyClass, com.hazelcast.security.ICredentialsFactory.class);
+        reflectiveClass.produce(new ReflectiveClassBuildItem(false, false, DefaultCredentialsFactory.class));
     }
 
     @BuildStep
