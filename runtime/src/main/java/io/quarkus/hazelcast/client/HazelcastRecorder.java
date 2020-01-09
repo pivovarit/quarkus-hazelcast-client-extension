@@ -12,10 +12,12 @@ import java.util.stream.Stream;
 
 @Recorder
 public class HazelcastRecorder {
+    private static final String CONFIG_FILENAME = "hazelcast-client";
+
     public void configureRuntimeProperties(HazelcastClientConfig config) {
         HazelcastClientProducer hazelcastClientProducer = Arc.container().instance(HazelcastClientProducer.class).get();
         hazelcastClientProducer.setHazelcastClientConfig(config);
-        hazelcastClientProducer.setClientConfig(getClientConfig());
+        hazelcastClientProducer.setClientConfig(resolveClientConfig());
     }
 
     private boolean exists(String s) {
@@ -26,21 +28,21 @@ public class HazelcastRecorder {
         }
     }
 
-    private ClientConfig getClientConfig() {
-        boolean ymlConfig = exists("hazelcast-client.yml");
-        boolean yamlConfig = exists("hazelcast-client.yaml");
-        boolean xmlConfig = exists("hazelcast-client.xml");
+    private ClientConfig resolveClientConfig() {
+        boolean yml = exists(CONFIG_FILENAME + ".yml");
+        boolean yaml = exists(CONFIG_FILENAME + ".yaml");
+        boolean xml = exists(CONFIG_FILENAME + ".xml");
 
-        if (Stream.of(ymlConfig, yamlConfig, xmlConfig).mapToInt(b -> b ? 1 : 0).sum() > 1) {
+        if (Stream.of(yml, yaml, xml).mapToInt(b -> b ? 1 : 0).sum() > 1) {
             throw new RuntimeException("max one configuration file is supported");
         }
 
-        if (ymlConfig) {
-            return new ClientClasspathYamlConfig("hazelcast-client.yml");
-        } else if (yamlConfig) {
-            return new ClientClasspathYamlConfig("hazelcast-client.yaml");
-        } else if (xmlConfig) {
-            return new ClientClasspathXmlConfig("hazelcast-client.xml");
+        if (yml) {
+            return new ClientClasspathYamlConfig(CONFIG_FILENAME + ".yml");
+        } else if (yaml) {
+            return new ClientClasspathYamlConfig(CONFIG_FILENAME + ".yaml");
+        } else if (xml) {
+            return new ClientClasspathXmlConfig(CONFIG_FILENAME + ".xml");
         }
         return null;
     }
