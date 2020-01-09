@@ -97,7 +97,7 @@ class HazelcastClientProcessor {
     }
 
     @BuildStep
-    void enableJni(
+    void registerICMPHelper(
       BuildProducer<JniBuildItem> jni,
       BuildProducer<RuntimeReinitializedClassBuildItem> reinitialized,
       BuildProducer<NativeImageResourceBuildItem> resources) {
