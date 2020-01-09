@@ -17,7 +17,7 @@ public class HazelcastRecorder {
 
     public void configureRuntimeProperties(HazelcastClientConfig config) {
         HazelcastClientProducer hazelcastClientProducer = Arc.container().instance(HazelcastClientProducer.class).get();
-        hazelcastClientProducer.setClientConfig(resolveClientConfig(config));
+        hazelcastClientProducer.injectClientConfig(resolveClientConfig(config));
     }
 
     private boolean exists(String s) {
