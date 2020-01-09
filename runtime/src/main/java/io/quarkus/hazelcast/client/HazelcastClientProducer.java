@@ -1,8 +1,5 @@
 package io.quarkus.hazelcast.client;
 
-import com.hazelcast.client.HazelcastClient;
-import com.hazelcast.client.config.ClientClasspathXmlConfig;
-import com.hazelcast.client.config.ClientClasspathYamlConfig;
 import com.hazelcast.client.config.ClientConfig;
 import com.hazelcast.core.HazelcastInstance;
 import io.quarkus.arc.DefaultBean;
@@ -11,10 +8,10 @@ import javax.annotation.PreDestroy;
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.inject.Produces;
 import javax.inject.Singleton;
-import java.util.Arrays;
-import java.util.Optional;
 import java.util.concurrent.atomic.AtomicReference;
-import java.util.stream.Stream;
+
+import static com.hazelcast.client.HazelcastClient.newHazelcastClient;
+import static java.util.Objects.requireNonNull;
 
 @ApplicationScoped
 public class HazelcastClientProducer {
@@ -26,7 +23,7 @@ public class HazelcastClientProducer {
     @Singleton
     @DefaultBean
     public HazelcastInstance hazelcastClientInstance() {
-        HazelcastInstance instance = HazelcastClient.newHazelcastClient(clientConfig);
+        HazelcastInstance instance = newHazelcastClient(requireNonNull(clientConfig, "clientConfig not initialized properly"));
         this.instance.set(instance);
         return instance;
     }
