@@ -171,7 +171,6 @@ class HazelcastClientProcessor {
           com.hazelcast.core.ItemListener.class,
           com.hazelcast.map.listener.MapListener.class,
           com.hazelcast.quorum.QuorumListener.class,
-          com.hazelcast.quorum.QuorumFunction.class,
           com.hazelcast.client.ClientExtension.class,
           com.hazelcast.client.spi.ClientProxyFactory.class);
 
