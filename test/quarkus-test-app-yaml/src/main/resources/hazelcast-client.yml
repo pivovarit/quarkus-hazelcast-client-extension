@@ -45,7 +45,6 @@ hazelcast-client:
 
   listeners:
     - guides.hazelcast.quarkus.CustomMembershipListener
-    - guides.hazelcast.quarkus.CustomMigrationListener
 
   serialization:
     portable-version: 3
