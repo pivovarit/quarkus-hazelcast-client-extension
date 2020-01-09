@@ -8,14 +8,12 @@ import io.quarkus.runtime.annotations.Recorder;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.util.stream.Stream;
 
-import static io.quarkus.hazelcast.client.HazelcastClientProducer.CONFIG_FILENAME;
-
 @Recorder
-public class HazelcastRecorder {
+class HazelcastRecorder {
+    private static final String CONFIG_FILENAME = "hazelcast-client";
+
     public void configureRuntimeProperties(HazelcastClientConfig config) {
         HazelcastClientProducer hazelcastClientProducer = Arc.container().instance(HazelcastClientProducer.class).get();
         hazelcastClientProducer.setHazelcastClientConfig(config);

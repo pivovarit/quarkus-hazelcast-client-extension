@@ -17,9 +17,7 @@ import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Stream;
 
 @ApplicationScoped
-public class HazelcastClientProducer {
-    public static final String CONFIG_FILENAME = "hazelcast-client";
-
+class HazelcastClientProducer {
     private final AtomicReference<HazelcastInstance> instance = new AtomicReference<>(null);
 
     private HazelcastClientConfig hazelcastClientConfig;
