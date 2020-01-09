@@ -7,7 +7,7 @@ import io.quarkus.runtime.annotations.ConfigRoot;
 import java.util.Optional;
 
 @ConfigRoot(name = "hazelcast-client", phase = ConfigPhase.RUN_TIME)
-class HazelcastClientConfig {
+public class HazelcastClientConfig {
 
     /**
      * Hazelcast Cluster address
