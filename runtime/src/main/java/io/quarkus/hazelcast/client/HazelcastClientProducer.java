@@ -25,15 +25,8 @@ public class HazelcastClientProducer {
     @Produces
     @Singleton
     @DefaultBean
-    public ClientConfig hazelcastConfigClientInstance() {
-        return clientConfig;
-    }
-
-    @Produces
-    @Singleton
-    @DefaultBean
-    public HazelcastInstance hazelcastClientInstance(ClientConfig config) {
-        HazelcastInstance instance = HazelcastClient.newHazelcastClient(config);
+    public HazelcastInstance hazelcastClientInstance() {
+        HazelcastInstance instance = HazelcastClient.newHazelcastClient(clientConfig);
         this.instance.set(instance);
         return instance;
     }
@@ -46,7 +39,7 @@ public class HazelcastClientProducer {
         }
     }
 
-    public void setClientConfig(ClientConfig clientConfig) {
+    public void injectClientConfig(ClientConfig clientConfig) {
         this.clientConfig = clientConfig;
     }
 }
