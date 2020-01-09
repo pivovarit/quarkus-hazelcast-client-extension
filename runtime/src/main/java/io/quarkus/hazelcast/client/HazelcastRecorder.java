@@ -11,7 +11,7 @@ import java.io.InputStream;
 import java.util.stream.Stream;
 
 @Recorder
-class HazelcastRecorder {
+public class HazelcastRecorder {
     private static final String CONFIG_FILENAME = "hazelcast-client";
 
     public void configureRuntimeProperties(HazelcastClientConfig config) {
