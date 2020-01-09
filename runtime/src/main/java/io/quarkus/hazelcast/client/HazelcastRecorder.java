@@ -6,6 +6,8 @@ import com.hazelcast.client.config.ClientConfig;
 import io.quarkus.arc.Arc;
 import io.quarkus.runtime.annotations.Recorder;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.stream.Stream;
@@ -20,8 +22,12 @@ public class HazelcastRecorder {
         hazelcastClientProducer.setClientConfig(resolveClientConfig());
     }
 
-    private boolean exists(String fileName) {
-        return Files.exists(Paths.get(fileName));
+    private boolean exists(String s) {
+        try (InputStream stream = Thread.currentThread().getContextClassLoader().getResourceAsStream(s)) {
+            return stream != null;
+        } catch (IOException e) {
+            return false;
+        }
     }
 
     private ClientConfig resolveClientConfig() {
