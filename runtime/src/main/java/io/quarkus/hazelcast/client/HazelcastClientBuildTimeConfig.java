@@ -6,8 +6,8 @@ import io.quarkus.runtime.annotations.ConfigRoot;
 
 import java.util.Optional;
 
-@ConfigRoot(name = "hazelcast-client", phase = ConfigPhase.RUN_TIME)
-public class HazelcastClientConfig {
+@ConfigRoot(name = "hazelcast-client", phase = ConfigPhase.BUILD_TIME)
+public class HazelcastClientBuildTimeConfig {
 
     /**
      * Hazelcast Cluster address
@@ -27,13 +27,11 @@ public class HazelcastClientConfig {
     @ConfigItem
     public Optional<String> groupName;
 
-
     /**
      * Outbound port
      */
     @ConfigItem
     public Optional<String> outboundPorts;
-
 
     /**
      * Outbound port definition
