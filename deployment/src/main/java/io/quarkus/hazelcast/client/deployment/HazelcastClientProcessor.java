@@ -113,7 +113,7 @@ class HazelcastClientProcessor {
       CombinedIndexBuildItem combinedIndexBuildItem,
       BuildProducer<ReflectiveHierarchyBuildItem> reflectiveHierarchyClass) {
 
-        registerAllImplementations(reflectiveHierarchyClass,
+        registerTypeHierarchy(reflectiveHierarchyClass,
           com.hazelcast.nio.SocketInterceptor.class,
           com.hazelcast.core.MembershipListener.class,
           com.hazelcast.core.EntryListener.class,
@@ -123,8 +123,7 @@ class HazelcastClientProcessor {
           com.hazelcast.client.ClientExtension.class,
           com.hazelcast.client.spi.ClientProxyFactory.class);
 
-        registerAllSubclasses(
-          combinedIndexBuildItem,
+        registerTypeHierarchy(
           reflectiveHierarchyClass,
           com.hazelcast.client.connection.ClientConnectionStrategy.class);
     }
@@ -133,7 +132,7 @@ class HazelcastClientProcessor {
       BuildProducer<ReflectiveClassBuildItem> reflectiveClass,
       BuildProducer<ReflectiveHierarchyBuildItem> reflectiveHierarchyClass) {
 
-        registerAllImplementations(reflectiveHierarchyClass, ConfigReplacer.class);
+        registerTypeHierarchy(reflectiveHierarchyClass, ConfigReplacer.class);
         reflectiveClass.produce(new ReflectiveClassBuildItem(false, false,
           EncryptionReplacer.class,
           PropertyReplacer.class));
@@ -143,7 +142,7 @@ class HazelcastClientProcessor {
       BuildProducer<ReflectiveClassBuildItem> reflectiveClass,
       BuildProducer<ReflectiveHierarchyBuildItem> reflectiveHierarchyClass) {
 
-        registerAllImplementations(reflectiveHierarchyClass,
+        registerTypeHierarchy(reflectiveHierarchyClass,
           DiscoveryStrategy.class,
           NodeFilter.class);
 
@@ -157,7 +156,7 @@ class HazelcastClientProcessor {
     private void registerCustomCredentialFactories(
       BuildProducer<ReflectiveClassBuildItem> reflectiveClass,
       BuildProducer<ReflectiveHierarchyBuildItem> reflectiveHierarchyClass) {
-        registerAllImplementations(
+        registerTypeHierarchy(
           reflectiveHierarchyClass,
           com.hazelcast.security.ICredentialsFactory.class);
 
@@ -169,7 +168,7 @@ class HazelcastClientProcessor {
       BuildProducer<ReflectiveClassBuildItem> reflectiveClass,
       BuildProducer<ReflectiveHierarchyBuildItem> reflectiveHierarchyClass) {
 
-        registerAllImplementations(
+        registerTypeHierarchy(
           reflectiveHierarchyClass,
           com.hazelcast.nio.ssl.SSLContextFactory.class);
         reflectiveClass.produce(
@@ -178,7 +177,7 @@ class HazelcastClientProcessor {
 
     private void registerUserImplementationsOfSerializableUtilities(
       BuildProducer<ReflectiveHierarchyBuildItem> reflectiveHierarchyClass) {
-        registerAllImplementations(reflectiveHierarchyClass,
+        registerTypeHierarchy(reflectiveHierarchyClass,
           DataSerializable.class,
           DataSerializableFactory.class,
           PortableFactory.class,
@@ -228,22 +227,12 @@ class HazelcastClientProcessor {
         resources.produce(new NativeImageResourceBuildItem("hazelcast-client-config-4.0.xsd"));
     }
 
-    private static void registerAllImplementations(
+    private static void registerTypeHierarchy(
       BuildProducer<ReflectiveHierarchyBuildItem> reflectiveHierarchyClass,
       Class<?>... classNames) {
+
         for (Class<?> klass : classNames) {
             reflectiveHierarchyClass.produce(new ReflectiveHierarchyBuildItem(Type.create(DotName.createSimple(klass.getName()), Type.Kind.CLASS)));
-        }
-    }
-
-    private static void registerAllSubclasses(
-      CombinedIndexBuildItem combinedIndexBuildItem,
-      BuildProducer<ReflectiveHierarchyBuildItem> reflectiveHierarchyClass,
-      Class<?>... classNames) {
-        for (Class<?> klass : classNames) {
-            combinedIndexBuildItem.getIndex().getAllKnownSubclasses(DotName.createSimple(klass.getName())).stream()
-              .map(ci -> new ReflectiveHierarchyBuildItem(Type.create(ci.name(), Type.Kind.CLASS)))
-              .forEach(reflectiveHierarchyClass::produce);
         }
     }
 }
