@@ -14,20 +14,20 @@ class HazelcastConfigurationResolver {
     private final HazelcastConfigurationParser parser = new HazelcastConfigurationParser();
 
     ClientConfig resolveClientConfig(HazelcastClientConfig config) {
-        boolean yml = exists(CONFIG_FILENAME + ".yml");
-        boolean yaml = exists(CONFIG_FILENAME + ".yaml");
-        boolean xml = exists(CONFIG_FILENAME + ".xml");
+        boolean yml = exists(withExtension("yml"));
+        boolean yaml = exists(withExtension("yaml"));
+        boolean xml = exists(withExtension("xml"));
 
         if (Stream.of(yml, yaml, xml).mapToInt(b -> b ? 1 : 0).sum() > 1) {
             throw new RuntimeException("max one configuration file is supported");
         }
 
         if (yml) {
-            return new ClientClasspathYamlConfig(CONFIG_FILENAME + ".yml");
+            return new ClientClasspathYamlConfig(withExtension("yml"));
         } else if (yaml) {
-            return new ClientClasspathYamlConfig(CONFIG_FILENAME + ".yaml");
+            return new ClientClasspathYamlConfig(withExtension("yaml"));
         } else if (xml) {
-            return new ClientClasspathXmlConfig(CONFIG_FILENAME + ".xml");
+            return new ClientClasspathXmlConfig(withExtension("xml"));
         }
 
         return parser.fromApplicationProperties(config);
@@ -39,5 +39,9 @@ class HazelcastConfigurationResolver {
         } catch (IOException e) {
             return false;
         }
+    }
+
+    private static String withExtension(String extension) {
+        return String.format("%s.%s", CONFIG_FILENAME, extension);
     }
 }
