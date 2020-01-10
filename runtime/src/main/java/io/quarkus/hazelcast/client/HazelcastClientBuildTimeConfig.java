@@ -6,6 +6,9 @@ import io.quarkus.runtime.annotations.ConfigRoot;
 
 import java.util.Optional;
 
+/**
+ * @author Grzegorz Piwowarek
+ */
 @ConfigRoot(name = "hazelcast-client", phase = ConfigPhase.BUILD_TIME)
 public class HazelcastClientBuildTimeConfig {
 

@@ -35,13 +35,16 @@ import io.quarkus.deployment.builditem.nativeimage.ReflectiveClassBuildItem;
 import io.quarkus.deployment.builditem.nativeimage.ReflectiveHierarchyBuildItem;
 import io.quarkus.deployment.builditem.nativeimage.RuntimeReinitializedClassBuildItem;
 import io.quarkus.hazelcast.client.HazelcastClientBuildTimeConfig;
+import io.quarkus.hazelcast.client.HazelcastClientBytecodeRecorder;
 import io.quarkus.hazelcast.client.HazelcastClientProducer;
-import io.quarkus.hazelcast.client.HazelcastRecorder;
 import org.jboss.jandex.DotName;
 import org.jboss.jandex.Type;
 
 import java.util.stream.IntStream;
 
+/**
+ * @author Grzegorz Piwowarek
+ */
 class HazelcastClientProcessor {
 
     private static final String FEATURE = "hazelcast-client";
@@ -84,7 +87,7 @@ class HazelcastClientProcessor {
     @Record(ExecutionTime.STATIC_INIT)
     HazelcastClientConfiguredBuildItem resolveClientProperties(
       BuildProducer<BeanContainerListenerBuildItem> containerListenerProducer,
-      HazelcastRecorder recorder) {
+      HazelcastClientBytecodeRecorder recorder) {
 
         BeanContainerListener configResolver = recorder.configureBuildTimeProperties(buildTimeConfig);
         containerListenerProducer.produce(new BeanContainerListenerBuildItem(configResolver));

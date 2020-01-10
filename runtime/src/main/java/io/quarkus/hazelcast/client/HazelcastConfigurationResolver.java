@@ -8,6 +8,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.stream.Stream;
 
+/**
+ * @author Grzegorz Piwowarek
+ */
 class HazelcastConfigurationResolver {
     private static final String CONFIG_FILENAME = "hazelcast-client";
 
