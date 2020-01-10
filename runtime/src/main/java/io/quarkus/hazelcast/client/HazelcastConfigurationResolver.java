@@ -37,6 +37,7 @@ class HazelcastConfigurationResolver {
     }
 
     private boolean exists(String configFileName) {
+        // Files.exist and referencing resources by path doesn't work on native
         try (InputStream stream = Thread.currentThread().getContextClassLoader().getResourceAsStream(configFileName)) {
             return stream != null;
         } catch (IOException e) {
