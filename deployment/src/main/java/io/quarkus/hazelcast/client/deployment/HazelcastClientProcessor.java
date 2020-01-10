@@ -70,11 +70,11 @@ class HazelcastClientProcessor {
         registerXMLParsingUtilities(reflectiveClasses, bundles, resources);
         registerReflectivelyCreatedClasses(reflectiveClasses);
         registerICMPHelper(jni, reinitializedClasses, resources);
-        registerUserImplementationsOfSerializableUtilities(buildIndex, reflectiveClassHierarchies);
-        registerSSLUtilities(buildIndex, reflectiveClasses, reflectiveClassHierarchies);
-        registerCustomCredentialFactories(buildIndex, reflectiveClasses, reflectiveClassHierarchies);
-        registerCustomDiscoveryStrategiesClasses(buildIndex, reflectiveClasses, reflectiveClassHierarchies);
-        registerCustomConfigReplacerClasses(buildIndex, reflectiveClasses, reflectiveClassHierarchies);
+        registerUserImplementationsOfSerializableUtilities(reflectiveClassHierarchies);
+        registerSSLUtilities(reflectiveClasses, reflectiveClassHierarchies);
+        registerCustomCredentialFactories(reflectiveClasses, reflectiveClassHierarchies);
+        registerCustomDiscoveryStrategiesClasses(reflectiveClasses, reflectiveClassHierarchies);
+        registerCustomConfigReplacerClasses(reflectiveClasses, reflectiveClassHierarchies);
         registerCustomImplementationClasses(buildIndex, reflectiveClassHierarchies);
     }
 
@@ -113,7 +113,7 @@ class HazelcastClientProcessor {
       CombinedIndexBuildItem combinedIndexBuildItem,
       BuildProducer<ReflectiveHierarchyBuildItem> reflectiveHierarchyClass) {
 
-        registerAllImplementations(combinedIndexBuildItem, reflectiveHierarchyClass,
+        registerAllImplementations(reflectiveHierarchyClass,
           com.hazelcast.nio.SocketInterceptor.class,
           com.hazelcast.core.MembershipListener.class,
           com.hazelcast.core.EntryListener.class,
@@ -130,20 +130,20 @@ class HazelcastClientProcessor {
     }
 
     private void registerCustomConfigReplacerClasses(
-      CombinedIndexBuildItem combinedIndexBuildItem, BuildProducer<ReflectiveClassBuildItem> reflectiveClass,
+      BuildProducer<ReflectiveClassBuildItem> reflectiveClass,
       BuildProducer<ReflectiveHierarchyBuildItem> reflectiveHierarchyClass) {
 
-        registerAllImplementations(combinedIndexBuildItem, reflectiveHierarchyClass, ConfigReplacer.class);
+        registerAllImplementations(reflectiveHierarchyClass, ConfigReplacer.class);
         reflectiveClass.produce(new ReflectiveClassBuildItem(false, false,
           EncryptionReplacer.class,
           PropertyReplacer.class));
     }
 
     private void registerCustomDiscoveryStrategiesClasses(
-      CombinedIndexBuildItem combinedIndexBuildItem, BuildProducer<ReflectiveClassBuildItem> reflectiveClass,
+      BuildProducer<ReflectiveClassBuildItem> reflectiveClass,
       BuildProducer<ReflectiveHierarchyBuildItem> reflectiveHierarchyClass) {
 
-        registerAllImplementations(combinedIndexBuildItem, reflectiveHierarchyClass,
+        registerAllImplementations(reflectiveHierarchyClass,
           DiscoveryStrategy.class,
           NodeFilter.class);
 
@@ -155,10 +155,9 @@ class HazelcastClientProcessor {
     }
 
     private void registerCustomCredentialFactories(
-      CombinedIndexBuildItem combinedIndexBuildItem, BuildProducer<ReflectiveClassBuildItem> reflectiveClass,
+      BuildProducer<ReflectiveClassBuildItem> reflectiveClass,
       BuildProducer<ReflectiveHierarchyBuildItem> reflectiveHierarchyClass) {
         registerAllImplementations(
-          combinedIndexBuildItem,
           reflectiveHierarchyClass,
           com.hazelcast.security.ICredentialsFactory.class);
 
@@ -167,11 +166,10 @@ class HazelcastClientProcessor {
     }
 
     private void registerSSLUtilities(
-      CombinedIndexBuildItem combinedIndexBuildItem, BuildProducer<ReflectiveClassBuildItem> reflectiveClass,
+      BuildProducer<ReflectiveClassBuildItem> reflectiveClass,
       BuildProducer<ReflectiveHierarchyBuildItem> reflectiveHierarchyClass) {
 
         registerAllImplementations(
-          combinedIndexBuildItem,
           reflectiveHierarchyClass,
           com.hazelcast.nio.ssl.SSLContextFactory.class);
         reflectiveClass.produce(
@@ -179,9 +177,8 @@ class HazelcastClientProcessor {
     }
 
     private void registerUserImplementationsOfSerializableUtilities(
-      CombinedIndexBuildItem combinedIndexBuildItem,
       BuildProducer<ReflectiveHierarchyBuildItem> reflectiveHierarchyClass) {
-        registerAllImplementations(combinedIndexBuildItem, reflectiveHierarchyClass,
+        registerAllImplementations(reflectiveHierarchyClass,
           DataSerializable.class,
           DataSerializableFactory.class,
           PortableFactory.class,
@@ -232,13 +229,10 @@ class HazelcastClientProcessor {
     }
 
     private static void registerAllImplementations(
-      CombinedIndexBuildItem combinedIndexBuildItem,
       BuildProducer<ReflectiveHierarchyBuildItem> reflectiveHierarchyClass,
       Class<?>... classNames) {
         for (Class<?> klass : classNames) {
-            combinedIndexBuildItem.getIndex().getAllKnownImplementors(DotName.createSimple(klass.getName())).stream()
-              .map(ci -> new ReflectiveHierarchyBuildItem(Type.create(ci.name(), Type.Kind.CLASS)))
-              .forEach(reflectiveHierarchyClass::produce);
+            reflectiveHierarchyClass.produce(new ReflectiveHierarchyBuildItem(Type.create(DotName.createSimple(klass.getName()), Type.Kind.CLASS)));
         }
     }
 
