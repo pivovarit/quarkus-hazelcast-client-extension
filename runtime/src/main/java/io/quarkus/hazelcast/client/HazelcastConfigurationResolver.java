@@ -13,7 +13,7 @@ class HazelcastConfigurationResolver {
 
     private final HazelcastConfigurationParser parser = new HazelcastConfigurationParser();
 
-    ClientConfig resolveClientConfig(HazelcastClientConfig config) {
+    ClientConfig resolveClientConfig(HazelcastClientBuildTimeConfig config) {
         boolean yml = exists(withExtension("yml"));
         boolean yaml = exists(withExtension("yaml"));
         boolean xml = exists(withExtension("xml"));
