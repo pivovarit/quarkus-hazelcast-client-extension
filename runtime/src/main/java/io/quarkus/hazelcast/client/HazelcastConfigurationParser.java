@@ -5,6 +5,9 @@ import com.hazelcast.client.config.ClientConfig;
 import java.util.Arrays;
 import java.util.stream.Stream;
 
+/**
+ * @author Grzegorz Piwowarek
+ */
 class HazelcastConfigurationParser {
 
     ClientConfig fromApplicationProperties(HazelcastClientBuildTimeConfig config) {

@@ -8,6 +8,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.stream.Stream;
 
+/**
+ * @author Grzegorz Piwowarek
+ */
 class HazelcastConfigurationResolver {
     private static final String CONFIG_FILENAME = "hazelcast-client";
 
@@ -34,6 +37,7 @@ class HazelcastConfigurationResolver {
     }
 
     private boolean exists(String configFileName) {
+        // Files.exist and referencing resources by path doesn't work on native
         try (InputStream stream = Thread.currentThread().getContextClassLoader().getResourceAsStream(configFileName)) {
             return stream != null;
         } catch (IOException e) {

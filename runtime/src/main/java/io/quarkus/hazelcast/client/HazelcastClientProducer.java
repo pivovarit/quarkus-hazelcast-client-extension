@@ -13,6 +13,9 @@ import java.util.concurrent.atomic.AtomicReference;
 import static com.hazelcast.client.HazelcastClient.newHazelcastClient;
 import static java.util.Objects.requireNonNull;
 
+/**
+ * @author Grzegorz Piwowarek
+ */
 @ApplicationScoped
 public class HazelcastClientProducer {
     private final AtomicReference<HazelcastInstance> instance = new AtomicReference<>(null);

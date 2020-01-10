@@ -4,7 +4,10 @@ metadata:
   keywords:
   - "hazelcast-client"
   - "hazelcast"
+  - "cache"
+  - "distributed cache"
+  - "caching"
   guide: "https://1.1.1.1" #TODO
   categories:
   - "data"
-  status: "unstable"
+  status: "unstable" #TODO
