@@ -6,6 +6,7 @@ import com.hazelcast.client.config.ClientConfig;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Optional;
 import java.util.stream.Stream;
 
 /**
@@ -17,6 +18,10 @@ class HazelcastConfigurationResolver {
     private final HazelcastConfigurationParser parser = new HazelcastConfigurationParser();
 
     ClientConfig resolveClientConfig(HazelcastClientBuildTimeConfig config) {
+        return resolveFromConfigFile().orElseGet(() -> parser.fromApplicationProperties(config));
+    }
+
+    private Optional<ClientConfig> resolveFromConfigFile() {
         boolean yml = exists(withExtension("yml"));
         boolean yaml = exists(withExtension("yaml"));
         boolean xml = exists(withExtension("xml"));
@@ -26,14 +31,13 @@ class HazelcastConfigurationResolver {
         }
 
         if (yml) {
-            return new ClientClasspathYamlConfig(withExtension("yml"));
+            return Optional.of(new ClientClasspathYamlConfig(withExtension("yml")));
         } else if (yaml) {
-            return new ClientClasspathYamlConfig(withExtension("yaml"));
+            return Optional.of(new ClientClasspathYamlConfig(withExtension("yaml")));
         } else if (xml) {
-            return new ClientClasspathXmlConfig(withExtension("xml"));
+            return Optional.of(new ClientClasspathXmlConfig(withExtension("xml")));
         }
-
-        return parser.fromApplicationProperties(config);
+        return Optional.empty();
     }
 
     private boolean exists(String configFileName) {
