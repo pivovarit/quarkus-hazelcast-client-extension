@@ -8,6 +8,7 @@ import com.hazelcast.config.MerkleTreeConfig;
 import com.hazelcast.config.replacer.EncryptionReplacer;
 import com.hazelcast.config.replacer.PropertyReplacer;
 import com.hazelcast.config.replacer.spi.ConfigReplacer;
+import com.hazelcast.core.MigrationListener;
 import com.hazelcast.gcp.GcpDiscoveryStrategy;
 import com.hazelcast.kubernetes.HazelcastKubernetesDiscoveryStrategyFactory;
 import com.hazelcast.nio.serialization.DataSerializable;
@@ -15,6 +16,7 @@ import com.hazelcast.nio.serialization.DataSerializableFactory;
 import com.hazelcast.nio.serialization.PortableFactory;
 import com.hazelcast.nio.serialization.Serializer;
 import com.hazelcast.nio.ssl.BasicSSLContextFactory;
+import com.hazelcast.quorum.QuorumListener;
 import com.hazelcast.spi.discovery.DiscoveryStrategy;
 import com.hazelcast.spi.discovery.NodeFilter;
 import com.hazelcast.spi.discovery.multicast.MulticastDiscoveryStrategy;
@@ -116,6 +118,8 @@ class HazelcastClientProcessor {
         registerTypeHierarchy(reflectiveHierarchyClass,
           com.hazelcast.nio.SocketInterceptor.class,
           com.hazelcast.core.MembershipListener.class,
+          MigrationListener.class,
+          QuorumListener.class,
           com.hazelcast.core.EntryListener.class,
           com.hazelcast.core.MessageListener.class,
           com.hazelcast.core.ItemListener.class,
