@@ -8,7 +8,6 @@ import javax.annotation.PreDestroy;
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.inject.Produces;
 import javax.inject.Singleton;
-import java.util.concurrent.atomic.AtomicReference;
 
 import static com.hazelcast.client.HazelcastClient.newHazelcastClient;
 import static java.util.Objects.requireNonNull;
