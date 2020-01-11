@@ -18,7 +18,7 @@ import static java.util.Objects.requireNonNull;
  */
 @ApplicationScoped
 public class HazelcastClientProducer {
-    private final AtomicReference<HazelcastInstance> instance = new AtomicReference<>(null);
+    private volatile HazelcastInstance instance = null;
 
     private ClientConfig clientConfig;
 
@@ -27,13 +27,13 @@ public class HazelcastClientProducer {
     @DefaultBean
     public HazelcastInstance hazelcastClientInstance() {
         HazelcastInstance instance = newHazelcastClient(requireNonNull(clientConfig, "clientConfig not initialized properly"));
-        this.instance.set(instance);
+        this.instance = instance;
         return instance;
     }
 
     @PreDestroy
     public void destroy() {
-        HazelcastInstance hazelcastInstance = instance.get();
+        HazelcastInstance hazelcastInstance = instance;
         if (hazelcastInstance != null) {
             hazelcastInstance.shutdown();
         }
