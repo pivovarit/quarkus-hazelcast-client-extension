@@ -53,6 +53,11 @@ class HazelcastClientProcessor {
 
     HazelcastClientBuildTimeConfig buildTimeConfig;
 
+    CombinedIndexBuildItem buildIndex;
+
+    BuildProducer<ReflectiveClassBuildItem> reflectiveClasses;
+
+
     @BuildStep
     FeatureBuildItem feature() {
         return new FeatureBuildItem(FEATURE);
@@ -64,13 +69,12 @@ class HazelcastClientProcessor {
       BuildProducer<RuntimeReinitializedClassBuildItem> reinitializedClasses,
       BuildProducer<NativeImageResourceBuildItem> resources,
       BuildProducer<NativeImageResourceBundleBuildItem> bundles,
-      BuildProducer<ReflectiveClassBuildItem> reflectiveClasses,
       BuildProducer<ReflectiveHierarchyBuildItem> reflectiveClassHierarchies,
       CombinedIndexBuildItem buildIndex) {
 
         registerConfigurationFiles(resources);
         registerXMLParsingUtilities(reflectiveClasses, bundles, resources);
-        registerReflectivelyCreatedClasses(reflectiveClasses);
+        registerReflectivelyCreatedClasses();
         registerICMPHelper(jni, reinitializedClasses, resources);
         registerUserImplementationsOfSerializableUtilities(reflectiveClassHierarchies);
         registerSSLUtilities(reflectiveClasses, reflectiveClassHierarchies);
@@ -104,7 +108,7 @@ class HazelcastClientProcessor {
           "hazelcast-client.xml"));
     }
 
-    private void registerReflectivelyCreatedClasses(BuildProducer<ReflectiveClassBuildItem> reflectiveClasses) {
+    private void registerReflectivelyCreatedClasses() {
         reflectiveClasses.produce(new ReflectiveClassBuildItem(false, false,
           HazelcastClientCachingProvider.class,
           EventJournalConfig.class,
