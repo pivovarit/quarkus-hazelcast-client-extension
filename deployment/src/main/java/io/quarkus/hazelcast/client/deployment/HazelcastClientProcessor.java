@@ -56,6 +56,10 @@ class HazelcastClientProcessor {
     CombinedIndexBuildItem buildIndex;
 
     BuildProducer<ReflectiveClassBuildItem> reflectiveClasses;
+    BuildProducer<NativeImageResourceBuildItem> resources;
+    BuildProducer<ReflectiveHierarchyBuildItem> reflectiveClassHierarchies;
+    BuildProducer<NativeImageResourceBundleBuildItem> bundles;
+    BuildProducer<RuntimeReinitializedClassBuildItem> reinitializedClasses;
 
 
     @BuildStep
@@ -65,23 +69,18 @@ class HazelcastClientProcessor {
 
     @BuildStep
     void configureNativeImageGeneration(
-      BuildProducer<JniBuildItem> jni,
-      BuildProducer<RuntimeReinitializedClassBuildItem> reinitializedClasses,
-      BuildProducer<NativeImageResourceBuildItem> resources,
-      BuildProducer<NativeImageResourceBundleBuildItem> bundles,
-      BuildProducer<ReflectiveHierarchyBuildItem> reflectiveClassHierarchies,
-      CombinedIndexBuildItem buildIndex) {
+      BuildProducer<JniBuildItem> jni) {
 
-        registerConfigurationFiles(resources);
-        registerXMLParsingUtilities(reflectiveClasses, bundles, resources);
+        registerConfigurationFiles();
+        registerXMLParsingUtilities();
         registerReflectivelyCreatedClasses();
-        registerICMPHelper(jni, reinitializedClasses, resources);
-        registerUserImplementationsOfSerializableUtilities(reflectiveClassHierarchies);
-        registerSSLUtilities(reflectiveClasses, reflectiveClassHierarchies);
-        registerCustomCredentialFactories(reflectiveClasses, reflectiveClassHierarchies);
-        registerCustomDiscoveryStrategiesClasses(reflectiveClasses, reflectiveClassHierarchies);
-        registerCustomConfigReplacerClasses(reflectiveClasses, reflectiveClassHierarchies);
-        registerCustomImplementationClasses(buildIndex, reflectiveClassHierarchies);
+        registerICMPHelper(jni);
+        registerUserImplementationsOfSerializableUtilities();
+        registerSSLUtilities();
+        registerCustomCredentialFactories();
+        registerCustomDiscoveryStrategiesClasses();
+        registerCustomConfigReplacerClasses();
+        registerCustomImplementationClasses();
     }
 
     @BuildStep
@@ -101,7 +100,7 @@ class HazelcastClientProcessor {
         return new HazelcastClientConfiguredBuildItem();
     }
 
-    private void registerConfigurationFiles(BuildProducer<NativeImageResourceBuildItem> resources) {
+    private void registerConfigurationFiles() {
         resources.produce(new NativeImageResourceBuildItem(
           "hazelcast-client.yml",
           "hazelcast-client.yaml",
@@ -115,11 +114,9 @@ class HazelcastClientProcessor {
           MerkleTreeConfig.class));
     }
 
-    private void registerCustomImplementationClasses(
-      CombinedIndexBuildItem combinedIndexBuildItem,
-      BuildProducer<ReflectiveHierarchyBuildItem> reflectiveHierarchyClass) {
+    private void registerCustomImplementationClasses() {
 
-        registerTypeHierarchy(reflectiveHierarchyClass,
+        registerTypeHierarchy(reflectiveClassHierarchies,
           com.hazelcast.nio.SocketInterceptor.class,
           com.hazelcast.core.MembershipListener.class,
           MigrationListener.class,
@@ -132,60 +129,51 @@ class HazelcastClientProcessor {
           com.hazelcast.client.spi.ClientProxyFactory.class);
 
         registerTypeHierarchy(
-          reflectiveHierarchyClass,
+          reflectiveClassHierarchies,
           com.hazelcast.client.connection.ClientConnectionStrategy.class);
     }
 
-    private void registerCustomConfigReplacerClasses(
-      BuildProducer<ReflectiveClassBuildItem> reflectiveClass,
-      BuildProducer<ReflectiveHierarchyBuildItem> reflectiveHierarchyClass) {
+    private void registerCustomConfigReplacerClasses() {
 
-        registerTypeHierarchy(reflectiveHierarchyClass, ConfigReplacer.class);
-        reflectiveClass.produce(new ReflectiveClassBuildItem(false, false,
+        registerTypeHierarchy(reflectiveClassHierarchies, ConfigReplacer.class);
+        reflectiveClasses.produce(new ReflectiveClassBuildItem(false, false,
           EncryptionReplacer.class,
           PropertyReplacer.class));
     }
 
-    private void registerCustomDiscoveryStrategiesClasses(
-      BuildProducer<ReflectiveClassBuildItem> reflectiveClass,
-      BuildProducer<ReflectiveHierarchyBuildItem> reflectiveHierarchyClass) {
+    private void registerCustomDiscoveryStrategiesClasses() {
 
-        registerTypeHierarchy(reflectiveHierarchyClass,
+        registerTypeHierarchy(reflectiveClassHierarchies,
           DiscoveryStrategy.class,
           NodeFilter.class);
 
-        reflectiveClass.produce(new ReflectiveClassBuildItem(false, false,
+        reflectiveClasses.produce(new ReflectiveClassBuildItem(false, false,
           MulticastDiscoveryStrategy.class,
           AwsDiscoveryStrategy.class,
           GcpDiscoveryStrategy.class,
           HazelcastKubernetesDiscoveryStrategyFactory.class));
     }
 
-    private void registerCustomCredentialFactories(
-      BuildProducer<ReflectiveClassBuildItem> reflectiveClass,
-      BuildProducer<ReflectiveHierarchyBuildItem> reflectiveHierarchyClass) {
+    private void registerCustomCredentialFactories() {
         registerTypeHierarchy(
-          reflectiveHierarchyClass,
+          reflectiveClassHierarchies,
           com.hazelcast.security.ICredentialsFactory.class);
 
-        reflectiveClass.produce(
+        reflectiveClasses.produce(
           new ReflectiveClassBuildItem(false, false, DefaultCredentialsFactory.class));
     }
 
-    private void registerSSLUtilities(
-      BuildProducer<ReflectiveClassBuildItem> reflectiveClass,
-      BuildProducer<ReflectiveHierarchyBuildItem> reflectiveHierarchyClass) {
+    private void registerSSLUtilities() {
 
         registerTypeHierarchy(
-          reflectiveHierarchyClass,
+          reflectiveClassHierarchies,
           com.hazelcast.nio.ssl.SSLContextFactory.class);
-        reflectiveClass.produce(
+        reflectiveClasses.produce(
           new ReflectiveClassBuildItem(false, false, BasicSSLContextFactory.class));
     }
 
-    private void registerUserImplementationsOfSerializableUtilities(
-      BuildProducer<ReflectiveHierarchyBuildItem> reflectiveHierarchyClass) {
-        registerTypeHierarchy(reflectiveHierarchyClass,
+    private void registerUserImplementationsOfSerializableUtilities() {
+        registerTypeHierarchy(reflectiveClassHierarchies,
           DataSerializable.class,
           DataSerializableFactory.class,
           PortableFactory.class,
@@ -193,9 +181,7 @@ class HazelcastClientProcessor {
     }
 
     private void registerICMPHelper(
-      BuildProducer<JniBuildItem> jni,
-      BuildProducer<RuntimeReinitializedClassBuildItem> reinitializedClasses,
-      BuildProducer<NativeImageResourceBuildItem> resources) {
+      BuildProducer<JniBuildItem> jni) {
         resources.produce(new NativeImageResourceBuildItem(
           "lib/linux-x86/libicmp_helper.so",
           "lib/linux-x86_64/libicmp_helper.so"));
@@ -203,11 +189,8 @@ class HazelcastClientProcessor {
         jni.produce(new JniBuildItem());
     }
 
-    private void registerXMLParsingUtilities(
-      BuildProducer<ReflectiveClassBuildItem> reflectiveClass,
-      BuildProducer<NativeImageResourceBundleBuildItem> bundles,
-      BuildProducer<NativeImageResourceBuildItem> resources) {
-        reflectiveClass.produce(new ReflectiveClassBuildItem(false, false,
+    private void registerXMLParsingUtilities() {
+        reflectiveClasses.produce(new ReflectiveClassBuildItem(false, false,
           "com.sun.org.apache.xerces.internal.jaxp.DocumentBuilderFactoryImpl",
           "com.sun.org.apache.xerces.internal.jaxp.SAXParserFactoryImpl",
           "com.sun.xml.bind.v2.ContextFactory",
