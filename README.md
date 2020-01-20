@@ -58,7 +58,6 @@ FROM quay.io/quarkus/ubi-quarkus-native-image:19.2.1 as graalvm
  COPY target/*-runner /work/application
  RUN chmod 775 /work
  EXPOSE 8080
- CMD ["./application", "-Dquarkus.http.host=0.0.0.0"]
  CMD ["./application", "-Dquarkus.http.host=0.0.0.0", "-Djava.library.path=/work/lib", "-Djavax.net.ssl.trustStore=/work/cacerts"]
 ```
 
