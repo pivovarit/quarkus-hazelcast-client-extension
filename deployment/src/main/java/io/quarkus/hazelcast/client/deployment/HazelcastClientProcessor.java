@@ -1,6 +1,7 @@
 package io.quarkus.hazelcast.client.deployment;
 
 import com.hazelcast.aws.AwsDiscoveryStrategy;
+import com.hazelcast.aws.AwsDiscoveryStrategyFactory;
 import com.hazelcast.client.cache.impl.HazelcastClientCachingProvider;
 import com.hazelcast.client.connection.nio.DefaultCredentialsFactory;
 import com.hazelcast.config.EventJournalConfig;
@@ -10,7 +11,7 @@ import com.hazelcast.config.replacer.PropertyReplacer;
 import com.hazelcast.config.replacer.spi.ConfigReplacer;
 import com.hazelcast.core.MigrationListener;
 import com.hazelcast.gcp.GcpDiscoveryStrategy;
-import com.hazelcast.kubernetes.HazelcastKubernetesDiscoveryStrategyFactory;
+import com.hazelcast.gcp.GcpDiscoveryStrategyFactory;
 import com.hazelcast.nio.serialization.DataSerializable;
 import com.hazelcast.nio.serialization.DataSerializableFactory;
 import com.hazelcast.nio.serialization.PortableFactory;
@@ -18,6 +19,7 @@ import com.hazelcast.nio.serialization.Serializer;
 import com.hazelcast.nio.ssl.BasicSSLContextFactory;
 import com.hazelcast.quorum.QuorumListener;
 import com.hazelcast.spi.discovery.DiscoveryStrategy;
+import com.hazelcast.spi.discovery.DiscoveryStrategyFactory;
 import com.hazelcast.spi.discovery.NodeFilter;
 import com.hazelcast.spi.discovery.multicast.MulticastDiscoveryStrategy;
 import com.hazelcast.util.ICMPHelper;
@@ -36,12 +38,17 @@ import io.quarkus.deployment.builditem.nativeimage.NativeImageResourceBundleBuil
 import io.quarkus.deployment.builditem.nativeimage.ReflectiveClassBuildItem;
 import io.quarkus.deployment.builditem.nativeimage.ReflectiveHierarchyBuildItem;
 import io.quarkus.deployment.builditem.nativeimage.RuntimeReinitializedClassBuildItem;
+import io.quarkus.deployment.builditem.nativeimage.ServiceProviderBuildItem;
+import io.quarkus.deployment.util.ServiceUtil;
 import io.quarkus.hazelcast.client.HazelcastClientBuildTimeConfig;
 import io.quarkus.hazelcast.client.HazelcastClientBytecodeRecorder;
 import io.quarkus.hazelcast.client.HazelcastClientProducer;
 import org.jboss.jandex.DotName;
 import org.jboss.jandex.Type;
 
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Set;
 import java.util.stream.IntStream;
 
 /**
@@ -60,7 +67,7 @@ class HazelcastClientProcessor {
     BuildProducer<ReflectiveHierarchyBuildItem> reflectiveClassHierarchies;
     BuildProducer<NativeImageResourceBundleBuildItem> bundles;
     BuildProducer<RuntimeReinitializedClassBuildItem> reinitializedClasses;
-
+    BuildProducer<ServiceProviderBuildItem> services;
 
     @BuildStep
     FeatureBuildItem feature() {
@@ -150,8 +157,19 @@ class HazelcastClientProcessor {
         reflectiveClasses.produce(new ReflectiveClassBuildItem(false, false,
           MulticastDiscoveryStrategy.class,
           AwsDiscoveryStrategy.class,
+          AwsDiscoveryStrategyFactory.class,
           GcpDiscoveryStrategy.class,
-          HazelcastKubernetesDiscoveryStrategyFactory.class));
+          GcpDiscoveryStrategyFactory.class));
+    }
+
+    @BuildStep
+    void registerServiceProviders() throws IOException {
+        String service = "META-INF/services/" + DiscoveryStrategyFactory.class.getName();
+
+        Set<String> implementations = ServiceUtil.classNamesNamedIn(Thread.currentThread().getContextClassLoader(), service);
+
+        services.produce(
+          new ServiceProviderBuildItem(DiscoveryStrategyFactory.class.getName(), new ArrayList<>(implementations)));
     }
 
     private void registerCustomCredentialFactories() {
