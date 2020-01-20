@@ -43,5 +43,25 @@ In order to configure the client using the `hazelcast-client.yml` file, place th
     
 Configuration entries from `hazelcast-client.yml` override all `quarkus.hazelcast-client.*` entries.
 
+### SSL
+In order for SSL to work, one needs to properly set `java.library.path` and `javax.net.ssl.trustStore` parameters.
+
+This is how you can do that within a Dockerfile:
+
+```
+FROM quay.io/quarkus/ubi-quarkus-native-image:19.2.1 as graalvm
+ FROM registry.access.redhat.com/ubi8/ubi-minimal
+ WORKDIR /work/
+ COPY --from=graalvm /opt/graalvm/jre/lib/security/cacerts /work/cacerts
+ COPY --from=graalvm /opt/graalvm/jre/lib/amd64/libsunec.so /work/lib/libsunec.so
+
+ COPY target/*-runner /work/application
+ RUN chmod 775 /work
+ EXPOSE 8080
+ CMD ["./application", "-Dquarkus.http.host=0.0.0.0"]
+ CMD ["./application", "-Dquarkus.http.host=0.0.0.0", "-Djava.library.path=/work/lib", "-Djavax.net.ssl.trustStore=/work/cacerts"]
+```
+
 ## Limitations (native mode)
 - Default Java serialization is not supported
+- SSL requires extra configuration
