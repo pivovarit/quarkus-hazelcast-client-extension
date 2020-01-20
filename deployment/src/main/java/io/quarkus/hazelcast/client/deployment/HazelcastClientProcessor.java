@@ -80,6 +80,7 @@ class HazelcastClientProcessor {
         ssl.produce(new ExtensionSslNativeSupportBuildItem(FEATURE));
     }
 
+    @BuildStep
     void enableJNI(BuildProducer<JniBuildItem> jni) {
         jni.produce(new JniBuildItem());
     }
