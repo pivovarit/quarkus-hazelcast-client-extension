@@ -12,7 +12,6 @@ import com.hazelcast.config.replacer.spi.ConfigReplacer;
 import com.hazelcast.core.MigrationListener;
 import com.hazelcast.gcp.GcpDiscoveryStrategy;
 import com.hazelcast.gcp.GcpDiscoveryStrategyFactory;
-import com.hazelcast.kubernetes.HazelcastKubernetesDiscoveryStrategyFactory;
 import com.hazelcast.nio.serialization.DataSerializable;
 import com.hazelcast.nio.serialization.DataSerializableFactory;
 import com.hazelcast.nio.serialization.PortableFactory;
@@ -32,6 +31,7 @@ import io.quarkus.deployment.annotations.BuildStep;
 import io.quarkus.deployment.annotations.ExecutionTime;
 import io.quarkus.deployment.annotations.Record;
 import io.quarkus.deployment.builditem.CombinedIndexBuildItem;
+import io.quarkus.deployment.builditem.ExtensionSslNativeSupportBuildItem;
 import io.quarkus.deployment.builditem.FeatureBuildItem;
 import io.quarkus.deployment.builditem.JniBuildItem;
 import io.quarkus.deployment.builditem.nativeimage.NativeImageResourceBuildItem;
@@ -76,13 +76,21 @@ class HazelcastClientProcessor {
     }
 
     @BuildStep
-    void configureNativeImageGeneration(
-      BuildProducer<JniBuildItem> jni) {
+    void enableSSL(BuildProducer<ExtensionSslNativeSupportBuildItem> ssl) {
+        ssl.produce(new ExtensionSslNativeSupportBuildItem(FEATURE));
+    }
 
+    @BuildStep
+    void enableJNI(BuildProducer<JniBuildItem> jni) {
+        jni.produce(new JniBuildItem());
+    }
+
+    @BuildStep
+    void configureNativeImageGeneration() {
         registerConfigurationFiles();
         registerXMLParsingUtilities();
         registerReflectivelyCreatedClasses();
-        registerICMPHelper(jni);
+        registerICMPHelper();
         registerUserImplementationsOfSerializableUtilities();
         registerSSLUtilities();
         registerCustomCredentialFactories();
@@ -203,13 +211,11 @@ class HazelcastClientProcessor {
           Serializer.class);
     }
 
-    private void registerICMPHelper(
-      BuildProducer<JniBuildItem> jni) {
+    private void registerICMPHelper() {
         resources.produce(new NativeImageResourceBuildItem(
           "lib/linux-x86/libicmp_helper.so",
           "lib/linux-x86_64/libicmp_helper.so"));
         reinitializedClasses.produce(new RuntimeReinitializedClassBuildItem(ICMPHelper.class.getName()));
-        jni.produce(new JniBuildItem());
     }
 
     private void registerXMLParsingUtilities() {
