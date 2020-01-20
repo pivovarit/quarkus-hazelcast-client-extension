@@ -12,6 +12,7 @@ import com.hazelcast.config.replacer.spi.ConfigReplacer;
 import com.hazelcast.core.MigrationListener;
 import com.hazelcast.gcp.GcpDiscoveryStrategy;
 import com.hazelcast.gcp.GcpDiscoveryStrategyFactory;
+import com.hazelcast.kubernetes.HazelcastKubernetesDiscoveryStrategyFactory;
 import com.hazelcast.nio.serialization.DataSerializable;
 import com.hazelcast.nio.serialization.DataSerializableFactory;
 import com.hazelcast.nio.serialization.PortableFactory;
@@ -160,6 +161,10 @@ class HazelcastClientProcessor {
           AwsDiscoveryStrategyFactory.class,
           GcpDiscoveryStrategy.class,
           GcpDiscoveryStrategyFactory.class));
+
+        reflectiveClasses.produce(new ReflectiveClassBuildItem(false, false,
+          "com.hazelcast.kubernetes.HazelcastKubernetesDiscoveryStrategyFactory",
+          "com.hazelcast.kubernetes.HazelcastKubernetesDiscoveryStrategy"));
     }
 
     @BuildStep
