@@ -2,8 +2,10 @@ package io.quarkus.hazelcast.client.deployment;
 
 import com.hazelcast.aws.AwsDiscoveryStrategy;
 import com.hazelcast.aws.AwsDiscoveryStrategyFactory;
+import com.hazelcast.client.ClientExtension;
 import com.hazelcast.client.cache.impl.HazelcastClientCachingProvider;
 import com.hazelcast.client.connection.nio.DefaultCredentialsFactory;
+import com.hazelcast.com.fasterxml.jackson.core.JsonFactory;
 import com.hazelcast.config.EventJournalConfig;
 import com.hazelcast.config.MerkleTreeConfig;
 import com.hazelcast.config.replacer.EncryptionReplacer;
@@ -12,10 +14,14 @@ import com.hazelcast.config.replacer.spi.ConfigReplacer;
 import com.hazelcast.core.MigrationListener;
 import com.hazelcast.gcp.GcpDiscoveryStrategy;
 import com.hazelcast.gcp.GcpDiscoveryStrategyFactory;
+import com.hazelcast.instance.NodeExtension;
+import com.hazelcast.internal.serialization.DataSerializerHook;
+import com.hazelcast.internal.serialization.PortableHook;
 import com.hazelcast.nio.serialization.DataSerializable;
 import com.hazelcast.nio.serialization.DataSerializableFactory;
 import com.hazelcast.nio.serialization.PortableFactory;
 import com.hazelcast.nio.serialization.Serializer;
+import com.hazelcast.nio.serialization.SerializerHook;
 import com.hazelcast.nio.ssl.BasicSSLContextFactory;
 import com.hazelcast.quorum.QuorumListener;
 import com.hazelcast.spi.discovery.DiscoveryStrategy;
@@ -86,7 +92,7 @@ class HazelcastClientProcessor {
     }
 
     @BuildStep
-    void configureNativeImageGeneration() {
+    void configureNativeImageGeneration() throws IOException {
         registerConfigurationFiles();
         registerXMLParsingUtilities();
         registerReflectivelyCreatedClasses();
@@ -97,6 +103,9 @@ class HazelcastClientProcessor {
         registerCustomDiscoveryStrategiesClasses();
         registerCustomConfigReplacerClasses();
         registerCustomImplementationClasses();
+        registerServiceProviders(DiscoveryStrategyFactory.class);
+        registerServiceProviders(ClientExtension.class);
+        registerServiceProviders(JsonFactory.class);
     }
 
     @BuildStep
@@ -175,14 +184,12 @@ class HazelcastClientProcessor {
           "com.hazelcast.kubernetes.HazelcastKubernetesDiscoveryStrategy"));
     }
 
-    @BuildStep
-    void registerServiceProviders() throws IOException {
-        String service = "META-INF/services/" + DiscoveryStrategyFactory.class.getName();
+    void registerServiceProviders(Class<?> klass) throws IOException {
+        String service = "META-INF/services/" + klass.getName();
 
         Set<String> implementations = ServiceUtil.classNamesNamedIn(Thread.currentThread().getContextClassLoader(), service);
 
-        services.produce(
-          new ServiceProviderBuildItem(DiscoveryStrategyFactory.class.getName(), new ArrayList<>(implementations)));
+        services.produce(new ServiceProviderBuildItem(klass.getName(), new ArrayList<>(implementations)));
     }
 
     private void registerCustomCredentialFactories() {
