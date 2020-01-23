@@ -116,6 +116,7 @@ class HazelcastClientProcessor {
     private void registerConfigurationFiles() {
         resources.produce(new NativeImageResourceBuildItem(
           "hazelcast-client.yml",
+          "hazelcast-client-default.xml",
           "hazelcast-client.yaml",
           "hazelcast-client.xml"));
     }

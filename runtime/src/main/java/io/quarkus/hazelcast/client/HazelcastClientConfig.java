@@ -13,16 +13,10 @@ import java.util.Optional;
 public class HazelcastClientConfig {
 
     /**
-     * Hazelcast Client configuration file
-     */
-    @ConfigItem
-    public Optional<String> configFile;
-
-    /**
      * Hazelcast Cluster address
      */
-    @ConfigItem(defaultValue = "http://localhost:5701")
-    public String clusterMembers;
+    @ConfigItem
+    public Optional<String> clusterMembers;
 
     /**
      * Hazelcast client label name
