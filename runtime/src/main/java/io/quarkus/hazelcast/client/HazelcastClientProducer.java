@@ -24,7 +24,7 @@ public class HazelcastClientProducer {
     @Singleton
     @DefaultBean
     public HazelcastInstance hazelcastClientInstance() {
-        return newHazelcastClient(requireNonNull(clientConfig, "clientConfig not initialized properly"));
+        return newHazelcastClient();
     }
 
     @PreDestroy
