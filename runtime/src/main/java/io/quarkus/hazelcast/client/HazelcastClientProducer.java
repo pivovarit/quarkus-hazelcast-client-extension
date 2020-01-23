@@ -1,7 +1,6 @@
 package io.quarkus.hazelcast.client;
 
 import com.hazelcast.client.HazelcastClient;
-import com.hazelcast.client.config.ClientConfig;
 import com.hazelcast.core.HazelcastInstance;
 import io.quarkus.arc.DefaultBean;
 
@@ -11,20 +10,20 @@ import javax.enterprise.inject.Produces;
 import javax.inject.Singleton;
 
 import static com.hazelcast.client.HazelcastClient.newHazelcastClient;
-import static java.util.Objects.requireNonNull;
 
 /**
  * @author Grzegorz Piwowarek
  */
 @ApplicationScoped
 public class HazelcastClientProducer {
-    private ClientConfig clientConfig;
+    HazelcastClientConfig config;
 
     @Produces
     @Singleton
     @DefaultBean
     public HazelcastInstance hazelcastClientInstance() {
-        return newHazelcastClient(requireNonNull(clientConfig, "clientConfig not initialized properly"));
+        return newHazelcastClient(new HazelcastConfigurationResolver()
+          .resolveClientConfig(config));
     }
 
     @PreDestroy
@@ -32,7 +31,7 @@ public class HazelcastClientProducer {
         HazelcastClient.shutdownAll();
     }
 
-    public void injectClientConfig(ClientConfig clientConfig) {
-        this.clientConfig = clientConfig;
+    public void injectConfig(HazelcastClientConfig config) {
+        this.config = config;
     }
 }

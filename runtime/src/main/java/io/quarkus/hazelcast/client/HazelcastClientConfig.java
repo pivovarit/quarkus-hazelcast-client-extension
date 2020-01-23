@@ -9,8 +9,14 @@ import java.util.Optional;
 /**
  * @author Grzegorz Piwowarek
  */
-@ConfigRoot(name = "hazelcast-client", phase = ConfigPhase.BUILD_TIME)
-public class HazelcastClientBuildTimeConfig {
+@ConfigRoot(name = "hazelcast-client", phase = ConfigPhase.RUN_TIME)
+public class HazelcastClientConfig {
+
+    /**
+     * Hazelcast Client configuration file
+     */
+    @ConfigItem
+    public Optional<String> configFile;
 
     /**
      * Hazelcast Cluster address
