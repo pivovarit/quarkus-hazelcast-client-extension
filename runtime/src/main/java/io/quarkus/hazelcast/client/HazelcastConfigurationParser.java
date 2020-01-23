@@ -10,9 +10,7 @@ import java.util.stream.Stream;
  */
 class HazelcastConfigurationParser {
 
-    ClientConfig fromApplicationProperties(HazelcastClientConfig config) {
-        ClientConfig clientConfig = new ClientConfig();
-
+    ClientConfig fromApplicationProperties(HazelcastClientConfig config, ClientConfig clientConfig) {
         setClusterAddress(clientConfig, config);
         setGroupName(clientConfig, config);
         setLabels(clientConfig, config);
@@ -30,7 +28,8 @@ class HazelcastConfigurationParser {
     }
 
     private void setClusterAddress(ClientConfig clientConfig, HazelcastClientConfig config) {
-        clientConfig.getNetworkConfig().addAddress(config.clusterMembers.split(","));
+        config.clusterMembers
+          .ifPresent(members -> clientConfig.getNetworkConfig().addAddress(members.split(",")));
     }
 
     private void setGroupName(ClientConfig clientConfig, HazelcastClientConfig config) {
