@@ -19,13 +19,13 @@ import static java.util.Objects.requireNonNull;
 public class HazelcastClientProducer {
     private volatile HazelcastInstance instance = null;
 
-    private ClientConfig clientConfig;
+    HazelcastClientConfig config;
 
     @Produces
     @Singleton
     @DefaultBean
     public HazelcastInstance hazelcastClientInstance() {
-        HazelcastInstance instance = newHazelcastClient(requireNonNull(clientConfig, "clientConfig not initialized properly"));
+        HazelcastInstance instance = newHazelcastClient(new HazelcastConfigurationResolver().resolveClientConfig(config));
         this.instance = instance;
         return instance;
     }
@@ -38,7 +38,7 @@ public class HazelcastClientProducer {
         }
     }
 
-    public void injectClientConfig(ClientConfig clientConfig) {
-        this.clientConfig = clientConfig;
+    public void injectConfig(HazelcastClientConfig config) {
+        this.config = config;
     }
 }

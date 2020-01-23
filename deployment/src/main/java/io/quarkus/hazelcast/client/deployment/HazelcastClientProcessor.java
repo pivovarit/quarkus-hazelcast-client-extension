@@ -62,8 +62,6 @@ class HazelcastClientProcessor {
 
     CombinedIndexBuildItem buildIndex;
 
-    HazelcastClientConfig buildTimeConfig;
-
     BuildProducer<ReflectiveClassBuildItem> reflectiveClasses;
     BuildProducer<NativeImageResourceBuildItem> resources;
     BuildProducer<ReflectiveHierarchyBuildItem> reflectiveClassHierarchies;
@@ -110,11 +108,8 @@ class HazelcastClientProcessor {
 
     @BuildStep
     @Record(ExecutionTime.RUNTIME_INIT)
-    HazelcastClientConfiguredBuildItem resolveClientProperties(
-      HazelcastClientBytecodeRecorder recorder) {
-
-        recorder.configureRuntimeProperties(buildTimeConfig);
-
+    HazelcastClientConfiguredBuildItem resolveClientProperties(HazelcastClientBytecodeRecorder recorder, HazelcastClientConfig config) {
+        recorder.configureRuntimeProperties(config);
         return new HazelcastClientConfiguredBuildItem();
     }
 
