@@ -1,5 +1,6 @@
 package io.quarkus.hazelcast.client;
 
+import com.hazelcast.client.HazelcastClient;
 import com.hazelcast.client.config.ClientConfig;
 import com.hazelcast.core.HazelcastInstance;
 import io.quarkus.arc.DefaultBean;
@@ -17,25 +18,18 @@ import static java.util.Objects.requireNonNull;
  */
 @ApplicationScoped
 public class HazelcastClientProducer {
-    private volatile HazelcastInstance instance = null;
-
     private ClientConfig clientConfig;
 
     @Produces
     @Singleton
     @DefaultBean
     public HazelcastInstance hazelcastClientInstance() {
-        HazelcastInstance instance = newHazelcastClient(requireNonNull(clientConfig, "clientConfig not initialized properly"));
-        this.instance = instance;
-        return instance;
+        return newHazelcastClient(requireNonNull(clientConfig, "clientConfig not initialized properly"));
     }
 
     @PreDestroy
     public void destroy() {
-        HazelcastInstance hazelcastInstance = instance;
-        if (hazelcastInstance != null) {
-            hazelcastInstance.shutdown();
-        }
+        HazelcastClient.shutdownAll();
     }
 
     public void injectClientConfig(ClientConfig clientConfig) {
