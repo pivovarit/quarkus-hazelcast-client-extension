@@ -17,7 +17,7 @@ class HazelcastConfigurationResolver {
 
     private final HazelcastConfigurationParser parser = new HazelcastConfigurationParser();
 
-    ClientConfig resolveClientConfig(HazelcastClientBuildTimeConfig config) {
+    ClientConfig resolveClientConfig(HazelcastClientConfig config) {
         return resolveFromConfigFile().orElseGet(() -> parser.fromApplicationProperties(config));
     }
 

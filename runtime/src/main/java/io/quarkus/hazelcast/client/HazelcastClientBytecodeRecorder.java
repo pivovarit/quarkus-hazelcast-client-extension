@@ -1,5 +1,6 @@
 package io.quarkus.hazelcast.client;
 
+import io.quarkus.arc.Arc;
 import io.quarkus.arc.runtime.BeanContainerListener;
 import io.quarkus.runtime.annotations.Recorder;
 
@@ -9,10 +10,8 @@ import io.quarkus.runtime.annotations.Recorder;
 @Recorder
 public class HazelcastClientBytecodeRecorder {
 
-    public BeanContainerListener configureBuildTimeProperties(HazelcastClientBuildTimeConfig config) {
-        return container -> {
-            container.instance(HazelcastClientProducer.class)
-              .injectClientConfig(new HazelcastConfigurationResolver().resolveClientConfig(config));
-        };
+    public void configureRuntimeProperties(HazelcastClientConfig config) {
+        HazelcastClientProducer producer = Arc.container().instance(HazelcastClientProducer.class).get();
+        producer.injectClientConfig(new HazelcastConfigurationResolver().resolveClientConfig(config));
     }
 }

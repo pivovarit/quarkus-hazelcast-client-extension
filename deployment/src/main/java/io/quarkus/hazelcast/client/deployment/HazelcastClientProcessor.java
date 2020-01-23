@@ -14,14 +14,10 @@ import com.hazelcast.config.replacer.spi.ConfigReplacer;
 import com.hazelcast.core.MigrationListener;
 import com.hazelcast.gcp.GcpDiscoveryStrategy;
 import com.hazelcast.gcp.GcpDiscoveryStrategyFactory;
-import com.hazelcast.instance.NodeExtension;
-import com.hazelcast.internal.serialization.DataSerializerHook;
-import com.hazelcast.internal.serialization.PortableHook;
 import com.hazelcast.nio.serialization.DataSerializable;
 import com.hazelcast.nio.serialization.DataSerializableFactory;
 import com.hazelcast.nio.serialization.PortableFactory;
 import com.hazelcast.nio.serialization.Serializer;
-import com.hazelcast.nio.serialization.SerializerHook;
 import com.hazelcast.nio.ssl.BasicSSLContextFactory;
 import com.hazelcast.quorum.QuorumListener;
 import com.hazelcast.spi.discovery.DiscoveryStrategy;
@@ -30,7 +26,6 @@ import com.hazelcast.spi.discovery.NodeFilter;
 import com.hazelcast.spi.discovery.multicast.MulticastDiscoveryStrategy;
 import com.hazelcast.util.ICMPHelper;
 import io.quarkus.arc.deployment.AdditionalBeanBuildItem;
-import io.quarkus.arc.deployment.BeanContainerListenerBuildItem;
 import io.quarkus.arc.runtime.BeanContainerListener;
 import io.quarkus.deployment.annotations.BuildProducer;
 import io.quarkus.deployment.annotations.BuildStep;
@@ -47,8 +42,8 @@ import io.quarkus.deployment.builditem.nativeimage.ReflectiveHierarchyBuildItem;
 import io.quarkus.deployment.builditem.nativeimage.RuntimeReinitializedClassBuildItem;
 import io.quarkus.deployment.builditem.nativeimage.ServiceProviderBuildItem;
 import io.quarkus.deployment.util.ServiceUtil;
-import io.quarkus.hazelcast.client.HazelcastClientBuildTimeConfig;
 import io.quarkus.hazelcast.client.HazelcastClientBytecodeRecorder;
+import io.quarkus.hazelcast.client.HazelcastClientConfig;
 import io.quarkus.hazelcast.client.HazelcastClientProducer;
 import org.jboss.jandex.DotName;
 import org.jboss.jandex.Type;
@@ -65,9 +60,9 @@ class HazelcastClientProcessor {
 
     private static final String FEATURE = "hazelcast-client";
 
-    HazelcastClientBuildTimeConfig buildTimeConfig;
-
     CombinedIndexBuildItem buildIndex;
+
+    HazelcastClientConfig buildTimeConfig;
 
     BuildProducer<ReflectiveClassBuildItem> reflectiveClasses;
     BuildProducer<NativeImageResourceBuildItem> resources;
@@ -114,13 +109,11 @@ class HazelcastClientProcessor {
     }
 
     @BuildStep
-    @Record(ExecutionTime.STATIC_INIT)
+    @Record(ExecutionTime.RUNTIME_INIT)
     HazelcastClientConfiguredBuildItem resolveClientProperties(
-      BuildProducer<BeanContainerListenerBuildItem> containerListenerProducer,
       HazelcastClientBytecodeRecorder recorder) {
 
-        BeanContainerListener configResolver = recorder.configureBuildTimeProperties(buildTimeConfig);
-        containerListenerProducer.produce(new BeanContainerListenerBuildItem(configResolver));
+        recorder.configureRuntimeProperties(buildTimeConfig);
 
         return new HazelcastClientConfiguredBuildItem();
     }
