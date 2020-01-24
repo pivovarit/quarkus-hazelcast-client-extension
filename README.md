@@ -50,15 +50,16 @@ This is how you can do that within a Dockerfile:
 
 ```
 FROM quay.io/quarkus/ubi-quarkus-native-image:19.2.1 as graalvm
- FROM registry.access.redhat.com/ubi8/ubi-minimal
- WORKDIR /work/
- COPY --from=graalvm /opt/graalvm/jre/lib/security/cacerts /work/cacerts
- COPY --from=graalvm /opt/graalvm/jre/lib/amd64/libsunec.so /work/lib/libsunec.so
+FROM registry.access.redhat.com/ubi8/ubi-minimal
 
- COPY target/*-runner /work/application
- RUN chmod 775 /work
- EXPOSE 8080
- CMD ["./application", "-Dquarkus.http.host=0.0.0.0", "-Djava.library.path=/work/lib", "-Djavax.net.ssl.trustStore=/work/cacerts"]
+WORKDIR /work/
+COPY --from=graalvm /opt/graalvm/jre/lib/security/cacerts /work/cacerts
+COPY --from=graalvm /opt/graalvm/jre/lib/amd64/libsunec.so /work/lib/libsunec.so
+COPY target/*-runner /work/application
+RUN chmod 775 /work
+EXPOSE 8080
+
+CMD ["./application", "-Dquarkus.http.host=0.0.0.0", "-Djava.library.path=/work/lib", "-Djavax.net.ssl.trustStore=/work/cacerts"]
 ```
 
 ## Limitations (native mode)
