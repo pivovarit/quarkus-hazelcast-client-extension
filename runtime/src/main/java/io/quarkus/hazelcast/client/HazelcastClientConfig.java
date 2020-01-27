@@ -28,7 +28,7 @@ public class HazelcastClientConfig {
      * Hazelcast Cluster group name
      */
     @ConfigItem
-    public Optional<String> groupName;
+    public Optional<String> clusterName;
 
     /**
      * Outbound port
@@ -41,18 +41,6 @@ public class HazelcastClientConfig {
      */
     @ConfigItem
     public Optional<String> outboundPortDefinitions;
-
-    /**
-     * Connection attempt limit
-     */
-    @ConfigItem
-    public Optional<Integer> connectionAttemptLimit;
-
-    /**
-     * Connection attempt period
-     */
-    @ConfigItem
-    public Optional<Integer> connectionAttemptPeriod;
 
     /**
      * Connection timeout

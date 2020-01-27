@@ -2,31 +2,35 @@ package io.quarkus.hazelcast.client.deployment;
 
 import com.hazelcast.aws.AwsDiscoveryStrategy;
 import com.hazelcast.aws.AwsDiscoveryStrategyFactory;
-import com.hazelcast.client.ClientExtension;
 import com.hazelcast.client.cache.impl.HazelcastClientCachingProvider;
-import com.hazelcast.client.connection.nio.DefaultCredentialsFactory;
+import com.hazelcast.client.impl.ClientExtension;
+import com.hazelcast.client.impl.spi.ClientProxyFactory;
+import com.hazelcast.cluster.MembershipListener;
+import com.hazelcast.collection.ItemListener;
 import com.hazelcast.com.fasterxml.jackson.core.JsonFactory;
 import com.hazelcast.config.EventJournalConfig;
 import com.hazelcast.config.MerkleTreeConfig;
 import com.hazelcast.config.replacer.EncryptionReplacer;
 import com.hazelcast.config.replacer.PropertyReplacer;
 import com.hazelcast.config.replacer.spi.ConfigReplacer;
-import com.hazelcast.core.MigrationListener;
+import com.hazelcast.config.security.StaticCredentialsFactory;
+import com.hazelcast.core.EntryListener;
 import com.hazelcast.gcp.GcpDiscoveryStrategy;
 import com.hazelcast.gcp.GcpDiscoveryStrategyFactory;
+import com.hazelcast.internal.util.ICMPHelper;
+import com.hazelcast.map.listener.MapListener;
 import com.hazelcast.nio.serialization.DataSerializable;
 import com.hazelcast.nio.serialization.DataSerializableFactory;
 import com.hazelcast.nio.serialization.PortableFactory;
 import com.hazelcast.nio.serialization.Serializer;
 import com.hazelcast.nio.ssl.BasicSSLContextFactory;
-import com.hazelcast.quorum.QuorumListener;
+import com.hazelcast.partition.MigrationListener;
 import com.hazelcast.spi.discovery.DiscoveryStrategy;
 import com.hazelcast.spi.discovery.DiscoveryStrategyFactory;
 import com.hazelcast.spi.discovery.NodeFilter;
 import com.hazelcast.spi.discovery.multicast.MulticastDiscoveryStrategy;
-import com.hazelcast.util.ICMPHelper;
+import com.hazelcast.topic.MessageListener;
 import io.quarkus.arc.deployment.AdditionalBeanBuildItem;
-import io.quarkus.arc.runtime.BeanContainerListener;
 import io.quarkus.deployment.annotations.BuildProducer;
 import io.quarkus.deployment.annotations.BuildStep;
 import io.quarkus.deployment.annotations.ExecutionTime;
@@ -132,19 +136,16 @@ class HazelcastClientProcessor {
 
         registerTypeHierarchy(reflectiveClassHierarchies,
           com.hazelcast.nio.SocketInterceptor.class,
-          com.hazelcast.core.MembershipListener.class,
+          MembershipListener.class,
           MigrationListener.class,
-          QuorumListener.class,
-          com.hazelcast.core.EntryListener.class,
-          com.hazelcast.core.MessageListener.class,
-          com.hazelcast.core.ItemListener.class,
-          com.hazelcast.map.listener.MapListener.class,
-          com.hazelcast.client.ClientExtension.class,
-          com.hazelcast.client.spi.ClientProxyFactory.class);
+          EntryListener.class,
+          MessageListener.class,
+          ItemListener.class,
+          MapListener.class,
+          ClientExtension.class,
+          ClientProxyFactory.class);
 
-        registerTypeHierarchy(
-          reflectiveClassHierarchies,
-          com.hazelcast.client.connection.ClientConnectionStrategy.class);
+        registerTypeHierarchy(reflectiveClassHierarchies);
     }
 
     private void registerCustomConfigReplacerClasses() {
@@ -187,7 +188,7 @@ class HazelcastClientProcessor {
           com.hazelcast.security.ICredentialsFactory.class);
 
         reflectiveClasses.produce(
-          new ReflectiveClassBuildItem(false, false, DefaultCredentialsFactory.class));
+          new ReflectiveClassBuildItem(false, false, StaticCredentialsFactory.class));
     }
 
     private void registerSSLUtilities() {

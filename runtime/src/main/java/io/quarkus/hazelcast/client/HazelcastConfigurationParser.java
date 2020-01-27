@@ -19,9 +19,6 @@ class HazelcastConfigurationParser {
         setOutboundPortDefinitions(clientConfig, config);
 
         setConnectionTimeout(clientConfig, config);
-        setConnectionAttemptLimit(clientConfig, config);
-        setConnectionAttemptPeriod(clientConfig, config);
-
         setExecutorPoolSize(clientConfig, config);
 
         return clientConfig;
@@ -33,25 +30,15 @@ class HazelcastConfigurationParser {
     }
 
     private void setGroupName(ClientConfig clientConfig, HazelcastClientConfig config) {
-        config.groupName
+        config.clusterName
           .filter(s -> !s.isEmpty())
-          .ifPresent(groupName -> clientConfig.getGroupConfig().setName(groupName));
+          .ifPresent(clientConfig::setClusterName);
     }
 
     private void setLabels(ClientConfig clientConfig, HazelcastClientConfig config) {
         config.labels
           .map(s -> Arrays.stream(s.split(","))).orElseGet(Stream::empty)
           .forEach(clientConfig::addLabel);
-    }
-
-    private void setConnectionAttemptPeriod(ClientConfig clientConfig, HazelcastClientConfig config) {
-        config.connectionAttemptPeriod
-          .ifPresent(period -> clientConfig.getNetworkConfig().setConnectionAttemptPeriod(period));
-    }
-
-    private void setConnectionAttemptLimit(ClientConfig clientConfig, HazelcastClientConfig config) {
-        config.connectionAttemptLimit
-          .ifPresent(attempts -> clientConfig.getNetworkConfig().setConnectionAttemptLimit(attempts));
     }
 
     private void setConnectionTimeout(ClientConfig clientConfig, HazelcastClientConfig config) {
