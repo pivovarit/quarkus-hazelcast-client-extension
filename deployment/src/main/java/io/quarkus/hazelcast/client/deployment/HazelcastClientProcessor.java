@@ -16,6 +16,7 @@ import com.hazelcast.config.security.StaticCredentialsFactory;
 import com.hazelcast.core.EntryListener;
 import com.hazelcast.gcp.GcpDiscoveryStrategy;
 import com.hazelcast.gcp.GcpDiscoveryStrategyFactory;
+import com.hazelcast.internal.config.DomConfigHelper;
 import com.hazelcast.internal.util.ICMPHelper;
 import com.hazelcast.map.listener.MapListener;
 import com.hazelcast.nio.serialization.DataSerializable;
@@ -28,6 +29,7 @@ import com.hazelcast.spi.discovery.DiscoveryStrategy;
 import com.hazelcast.spi.discovery.DiscoveryStrategyFactory;
 import com.hazelcast.spi.discovery.NodeFilter;
 import com.hazelcast.spi.discovery.multicast.MulticastDiscoveryStrategy;
+import com.hazelcast.spi.impl.AbstractInvocationFuture;
 import com.hazelcast.topic.MessageListener;
 import io.quarkus.arc.deployment.AdditionalBeanBuildItem;
 import io.quarkus.deployment.annotations.BuildProducer;
@@ -102,6 +104,7 @@ class HazelcastClientProcessor {
         registerServiceProviders(DiscoveryStrategyFactory.class);
         registerServiceProviders(ClientExtension.class);
         registerServiceProviders(com.hazelcast.com.fasterxml.jackson.core.JsonFactory.class);
+        reinitializeCommonFJP();
     }
 
     @BuildStep
@@ -125,8 +128,9 @@ class HazelcastClientProcessor {
     }
 
     private void registerReflectivelyCreatedClasses() {
-        reflectiveClasses.produce(new ReflectiveClassBuildItem(false, false,
+        reflectiveClasses.produce(new ReflectiveClassBuildItem(true, true,
           HazelcastClientCachingProvider.class,
+          DomConfigHelper.class,
           EventJournalConfig.class,
           MerkleTreeConfig.class));
     }
@@ -213,6 +217,10 @@ class HazelcastClientProcessor {
           "lib/linux-x86/libicmp_helper.so",
           "lib/linux-x86_64/libicmp_helper.so"));
         reinitializedClasses.produce(new RuntimeReinitializedClassBuildItem(ICMPHelper.class.getName()));
+    }
+
+    private void reinitializeCommonFJP() {
+        reinitializedClasses.produce(new RuntimeReinitializedClassBuildItem(AbstractInvocationFuture.class.getName()));
     }
 
     private void registerXMLParsingUtilities() {
