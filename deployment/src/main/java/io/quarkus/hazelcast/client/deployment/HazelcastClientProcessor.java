@@ -7,7 +7,6 @@ import com.hazelcast.client.impl.ClientExtension;
 import com.hazelcast.client.impl.spi.ClientProxyFactory;
 import com.hazelcast.cluster.MembershipListener;
 import com.hazelcast.collection.ItemListener;
-import com.hazelcast.com.fasterxml.jackson.core.JsonFactory;
 import com.hazelcast.config.EventJournalConfig;
 import com.hazelcast.config.MerkleTreeConfig;
 import com.hazelcast.config.replacer.EncryptionReplacer;
@@ -102,7 +101,7 @@ class HazelcastClientProcessor {
         registerCustomImplementationClasses();
         registerServiceProviders(DiscoveryStrategyFactory.class);
         registerServiceProviders(ClientExtension.class);
-        registerServiceProviders(JsonFactory.class);
+        registerServiceProviders(com.hazelcast.com.fasterxml.jackson.core.JsonFactory.class);
     }
 
     @BuildStep
@@ -177,7 +176,8 @@ class HazelcastClientProcessor {
     void registerServiceProviders(Class<?> klass) throws IOException {
         String service = "META-INF/services/" + klass.getName();
 
-        Set<String> implementations = ServiceUtil.classNamesNamedIn(Thread.currentThread().getContextClassLoader(), service);
+        Set<String> implementations = ServiceUtil
+          .classNamesNamedIn(Thread.currentThread().getContextClassLoader(), service);
 
         services.produce(new ServiceProviderBuildItem(klass.getName(), new ArrayList<>(implementations)));
     }
@@ -249,7 +249,8 @@ class HazelcastClientProcessor {
       Class<?>... classNames) {
 
         for (Class<?> klass : classNames) {
-            reflectiveHierarchyClass.produce(new ReflectiveHierarchyBuildItem(Type.create(DotName.createSimple(klass.getName()), Type.Kind.CLASS)));
+            reflectiveHierarchyClass.produce(new ReflectiveHierarchyBuildItem(Type
+              .create(DotName.createSimple(klass.getName()), Type.Kind.CLASS)));
         }
     }
 }
