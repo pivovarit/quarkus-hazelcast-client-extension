@@ -215,26 +215,6 @@ class HazelcastClientProcessor {
     }
 
     private void registerXMLParsingUtilities() {
-        reflectiveClasses.produce(new ReflectiveClassBuildItem(false, false,
-          "com.sun.org.apache.xerces.internal.jaxp.DocumentBuilderFactoryImpl",
-          "com.sun.org.apache.xerces.internal.jaxp.SAXParserFactoryImpl",
-          "com.sun.xml.bind.v2.ContextFactory",
-          "com.sun.xml.internal.stream.XMLInputFactoryImpl",
-          "com.sun.org.apache.xpath.internal.functions.FuncNot",
-          "com.sun.xml.internal.bind.v2.ContextFactory",
-          "com.sun.org.apache.xalan.internal.xsltc.trax.TransformerFactoryImpl",
-          "com.sun.org.apache.xerces.internal.impl.dv.xs.SchemaDVFactoryImpl",
-          "com.sun.org.apache.xerces.internal.jaxp.datatype.DatatypeFactoryImpl"));
-
-        bundles.produce(new NativeImageResourceBundleBuildItem(
-          "com.sun.org.apache.xml.internal.serializer.utils.SerializerMessages"));
-        bundles.produce(new NativeImageResourceBundleBuildItem(
-          "com.sun.org.apache.xerces.internal.impl.msg.XMLMessages"));
-        bundles.produce(new NativeImageResourceBundleBuildItem(
-          "com.sun.org.apache.xerces.internal.impl.msg.XMLSchemaMessages"));
-        bundles.produce(new NativeImageResourceBundleBuildItem(
-          "com.sun.org.apache.xerces.internal.impl.xpath.regex.message"));
-
         resources.produce(new NativeImageResourceBuildItem(
           "com/sun/org/apache/xml/internal/serializer/output_xml.properties"));
 
