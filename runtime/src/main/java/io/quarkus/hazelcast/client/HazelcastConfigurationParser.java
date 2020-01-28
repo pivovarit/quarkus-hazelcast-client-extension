@@ -19,8 +19,6 @@ class HazelcastConfigurationParser {
         setOutboundPortDefinitions(clientConfig, config);
 
         setConnectionTimeout(clientConfig, config);
-        setExecutorPoolSize(clientConfig, config);
-
         return clientConfig;
     }
 
@@ -56,10 +54,5 @@ class HazelcastConfigurationParser {
         config.outboundPorts
           .map(str -> Arrays.stream(str.split(","))).orElseGet(Stream::empty)
           .forEach(port -> clientConfig.getNetworkConfig().addOutboundPort(Integer.parseInt(port)));
-    }
-
-    private void setExecutorPoolSize(ClientConfig clientConfig, HazelcastClientConfig config) {
-        config.executorPoolSize
-          .ifPresent(clientConfig::setExecutorPoolSize);
     }
 }

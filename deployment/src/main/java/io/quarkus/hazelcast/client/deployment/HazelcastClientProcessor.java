@@ -44,6 +44,7 @@ import io.quarkus.deployment.builditem.nativeimage.NativeImageResourceBuildItem;
 import io.quarkus.deployment.builditem.nativeimage.NativeImageResourceBundleBuildItem;
 import io.quarkus.deployment.builditem.nativeimage.ReflectiveClassBuildItem;
 import io.quarkus.deployment.builditem.nativeimage.ReflectiveHierarchyBuildItem;
+import io.quarkus.deployment.builditem.nativeimage.RuntimeInitializedClassBuildItem;
 import io.quarkus.deployment.builditem.nativeimage.RuntimeReinitializedClassBuildItem;
 import io.quarkus.deployment.builditem.nativeimage.ServiceProviderBuildItem;
 import io.quarkus.deployment.util.ServiceUtil;
@@ -72,6 +73,7 @@ class HazelcastClientProcessor {
     BuildProducer<ReflectiveHierarchyBuildItem> reflectiveClassHierarchies;
     BuildProducer<NativeImageResourceBundleBuildItem> bundles;
     BuildProducer<RuntimeReinitializedClassBuildItem> reinitializedClasses;
+    BuildProducer<RuntimeInitializedClassBuildItem> runtimeInitializedClasses;
     BuildProducer<ServiceProviderBuildItem> services;
 
     @BuildStep
@@ -220,7 +222,7 @@ class HazelcastClientProcessor {
     }
 
     private void reinitializeCommonFJP() {
-        reinitializedClasses.produce(new RuntimeReinitializedClassBuildItem(AbstractInvocationFuture.class.getName()));
+        runtimeInitializedClasses.produce(new RuntimeInitializedClassBuildItem(AbstractInvocationFuture.class.getName()));
     }
 
     private void registerXMLParsingUtilities() {
