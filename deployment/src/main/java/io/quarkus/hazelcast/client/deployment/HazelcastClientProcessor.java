@@ -18,6 +18,7 @@ import com.hazelcast.core.EntryListener;
 import com.hazelcast.gcp.GcpDiscoveryStrategy;
 import com.hazelcast.gcp.GcpDiscoveryStrategyFactory;
 import com.hazelcast.internal.config.DomConfigHelper;
+import com.hazelcast.internal.util.ConcurrencyUtil;
 import com.hazelcast.internal.util.ICMPHelper;
 import com.hazelcast.map.listener.MapListener;
 import com.hazelcast.nio.serialization.DataSerializable;
@@ -224,9 +225,8 @@ class HazelcastClientProcessor {
     }
 
     private void reinitializeCommonFJP() {
-        runtimeInitializedClasses.produce(new RuntimeInitializedClassBuildItem(AbstractInvocationFuture.class.getName()));
-        runtimeInitializedClasses.produce(new RuntimeInitializedClassBuildItem(ClientReliableTopicProxy.class.getName()));
-        runtimeInitializedClasses.produce(new RuntimeInitializedClassBuildItem(InternalCompletableFuture.class.getName()));
+        // TODO remove after migrating to GraalVM 19.3.1 (deferred ForkJoinPool.commonPool())
+        reinitializedClasses.produce(new RuntimeReinitializedClassBuildItem(ConcurrencyUtil.class.getName()));
     }
 
     private void registerXMLParsingUtilities() {
