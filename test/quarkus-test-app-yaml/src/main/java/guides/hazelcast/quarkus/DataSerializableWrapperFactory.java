@@ -1,8 +1,10 @@
 package guides.hazelcast.quarkus;
 
+import com.hazelcast.nio.serialization.DataSerializableFactory;
 import com.hazelcast.nio.serialization.IdentifiedDataSerializable;
 
-class DataSerializableWrapperFactory implements com.hazelcast.nio.serialization.DataSerializableFactory {
+
+class DataSerializableWrapperFactory implements DataSerializableFactory {
     @Override
     public IdentifiedDataSerializable create(int typeId) {
         if (typeId == 42) {
