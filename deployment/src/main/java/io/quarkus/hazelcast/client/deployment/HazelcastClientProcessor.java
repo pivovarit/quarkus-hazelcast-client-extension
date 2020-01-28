@@ -4,6 +4,7 @@ import com.hazelcast.aws.AwsDiscoveryStrategy;
 import com.hazelcast.aws.AwsDiscoveryStrategyFactory;
 import com.hazelcast.client.cache.impl.HazelcastClientCachingProvider;
 import com.hazelcast.client.impl.ClientExtension;
+import com.hazelcast.client.impl.proxy.ClientReliableTopicProxy;
 import com.hazelcast.client.impl.spi.ClientProxyFactory;
 import com.hazelcast.cluster.MembershipListener;
 import com.hazelcast.collection.ItemListener;
@@ -30,6 +31,7 @@ import com.hazelcast.spi.discovery.DiscoveryStrategyFactory;
 import com.hazelcast.spi.discovery.NodeFilter;
 import com.hazelcast.spi.discovery.multicast.MulticastDiscoveryStrategy;
 import com.hazelcast.spi.impl.AbstractInvocationFuture;
+import com.hazelcast.spi.impl.InternalCompletableFuture;
 import com.hazelcast.topic.MessageListener;
 import io.quarkus.arc.deployment.AdditionalBeanBuildItem;
 import io.quarkus.deployment.annotations.BuildProducer;
@@ -223,6 +225,8 @@ class HazelcastClientProcessor {
 
     private void reinitializeCommonFJP() {
         runtimeInitializedClasses.produce(new RuntimeInitializedClassBuildItem(AbstractInvocationFuture.class.getName()));
+        runtimeInitializedClasses.produce(new RuntimeInitializedClassBuildItem(ClientReliableTopicProxy.class.getName()));
+        runtimeInitializedClasses.produce(new RuntimeInitializedClassBuildItem(InternalCompletableFuture.class.getName()));
     }
 
     private void registerXMLParsingUtilities() {
