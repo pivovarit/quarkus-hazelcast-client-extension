@@ -45,6 +45,7 @@ import io.quarkus.deployment.util.ServiceUtil;
 import io.quarkus.hazelcast.client.HazelcastClientBytecodeRecorder;
 import io.quarkus.hazelcast.client.HazelcastClientConfig;
 import io.quarkus.hazelcast.client.HazelcastClientProducer;
+import io.quarkus.jaxb.deployment.JaxbFileRootBuildItem;
 import org.jboss.jandex.DotName;
 import org.jboss.jandex.Type;
 
@@ -82,6 +83,11 @@ class HazelcastClientProcessor {
     @BuildStep
     void enableJNI(BuildProducer<JniBuildItem> jni) {
         jni.produce(new JniBuildItem());
+    }
+
+    @BuildStep
+    JaxbFileRootBuildItem enableJaxb() {
+        return new JaxbFileRootBuildItem("/");
     }
 
     @BuildStep
