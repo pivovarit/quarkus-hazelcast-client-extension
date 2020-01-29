@@ -1,7 +1,5 @@
 package io.quarkus.hazelcast.client.deployment;
 
-import com.hazelcast.aws.AwsDiscoveryStrategy;
-import com.hazelcast.aws.AwsDiscoveryStrategyFactory;
 import com.hazelcast.client.ClientExtension;
 import com.hazelcast.client.cache.impl.HazelcastClientCachingProvider;
 import com.hazelcast.client.connection.nio.DefaultCredentialsFactory;
@@ -12,8 +10,6 @@ import com.hazelcast.config.replacer.EncryptionReplacer;
 import com.hazelcast.config.replacer.PropertyReplacer;
 import com.hazelcast.config.replacer.spi.ConfigReplacer;
 import com.hazelcast.core.MigrationListener;
-import com.hazelcast.gcp.GcpDiscoveryStrategy;
-import com.hazelcast.gcp.GcpDiscoveryStrategyFactory;
 import com.hazelcast.nio.serialization.DataSerializable;
 import com.hazelcast.nio.serialization.DataSerializableFactory;
 import com.hazelcast.nio.serialization.PortableFactory;
@@ -26,7 +22,6 @@ import com.hazelcast.spi.discovery.NodeFilter;
 import com.hazelcast.spi.discovery.multicast.MulticastDiscoveryStrategy;
 import com.hazelcast.util.ICMPHelper;
 import io.quarkus.arc.deployment.AdditionalBeanBuildItem;
-import io.quarkus.arc.runtime.BeanContainerListener;
 import io.quarkus.deployment.annotations.BuildProducer;
 import io.quarkus.deployment.annotations.BuildStep;
 import io.quarkus.deployment.annotations.ExecutionTime;
@@ -167,12 +162,13 @@ class HazelcastClientProcessor {
           DiscoveryStrategy.class,
           NodeFilter.class);
 
+        reflectiveClasses.produce(new ReflectiveClassBuildItem(false, false, MulticastDiscoveryStrategy.class));
+
         reflectiveClasses.produce(new ReflectiveClassBuildItem(false, false,
-          MulticastDiscoveryStrategy.class,
-          AwsDiscoveryStrategy.class,
-          AwsDiscoveryStrategyFactory.class,
-          GcpDiscoveryStrategy.class,
-          GcpDiscoveryStrategyFactory.class));
+          "com.hazelcast.aws.AwsDiscoveryStrategy",
+          "com.hazelcast.aws.AwsDiscoveryStrategyFactory",
+          "com.hazelcast.gcp.GcpDiscoveryStrategy",
+          "com.hazelcast.gcp.GcpDiscoveryStrategyFactory"));
 
         reflectiveClasses.produce(new ReflectiveClassBuildItem(false, false,
           "com.hazelcast.kubernetes.HazelcastKubernetesDiscoveryStrategyFactory",
