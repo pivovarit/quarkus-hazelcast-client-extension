@@ -1,7 +1,6 @@
 package io.quarkus.hazelcast.client.deployment;
 
 import com.hazelcast.client.ClientExtension;
-import com.hazelcast.client.cache.impl.HazelcastClientCachingProvider;
 import com.hazelcast.client.connection.nio.DefaultCredentialsFactory;
 import com.hazelcast.com.fasterxml.jackson.core.JsonFactory;
 import com.hazelcast.config.EventJournalConfig;
@@ -34,6 +33,7 @@ import io.quarkus.deployment.builditem.nativeimage.NativeImageResourceBuildItem;
 import io.quarkus.deployment.builditem.nativeimage.NativeImageResourceBundleBuildItem;
 import io.quarkus.deployment.builditem.nativeimage.ReflectiveClassBuildItem;
 import io.quarkus.deployment.builditem.nativeimage.ReflectiveHierarchyBuildItem;
+import io.quarkus.deployment.builditem.nativeimage.RuntimeInitializedClassBuildItem;
 import io.quarkus.deployment.builditem.nativeimage.RuntimeReinitializedClassBuildItem;
 import io.quarkus.deployment.builditem.nativeimage.ServiceProviderBuildItem;
 import io.quarkus.deployment.util.ServiceUtil;
@@ -63,6 +63,7 @@ class HazelcastClientProcessor {
     BuildProducer<ReflectiveHierarchyBuildItem> reflectiveClassHierarchies;
     BuildProducer<NativeImageResourceBundleBuildItem> bundles;
     BuildProducer<RuntimeReinitializedClassBuildItem> reinitializedClasses;
+    BuildProducer<RuntimeInitializedClassBuildItem> runtimeInitializedClasses;
     BuildProducer<ServiceProviderBuildItem> services;
 
     @BuildStep
@@ -100,6 +101,7 @@ class HazelcastClientProcessor {
         registerServiceProviders(DiscoveryStrategyFactory.class);
         registerServiceProviders(ClientExtension.class);
         registerServiceProviders(JsonFactory.class);
+        runtimeInitializedClasses.produce(new RuntimeInitializedClassBuildItem(com.hazelcast.client.cache.impl.ClientCacheProxyFactory.class.getName()));
     }
 
     @BuildStep
@@ -124,7 +126,6 @@ class HazelcastClientProcessor {
 
     private void registerReflectivelyCreatedClasses() {
         reflectiveClasses.produce(new ReflectiveClassBuildItem(false, false,
-          HazelcastClientCachingProvider.class,
           EventJournalConfig.class,
           MerkleTreeConfig.class));
     }
@@ -178,7 +179,8 @@ class HazelcastClientProcessor {
     void registerServiceProviders(Class<?> klass) throws IOException {
         String service = "META-INF/services/" + klass.getName();
 
-        Set<String> implementations = ServiceUtil.classNamesNamedIn(Thread.currentThread().getContextClassLoader(), service);
+        Set<String> implementations = ServiceUtil
+          .classNamesNamedIn(Thread.currentThread().getContextClassLoader(), service);
 
         services.produce(new ServiceProviderBuildItem(klass.getName(), new ArrayList<>(implementations)));
     }
@@ -239,7 +241,8 @@ class HazelcastClientProcessor {
       Class<?>... classNames) {
 
         for (Class<?> klass : classNames) {
-            reflectiveHierarchyClass.produce(new ReflectiveHierarchyBuildItem(Type.create(DotName.createSimple(klass.getName()), Type.Kind.CLASS)));
+            reflectiveHierarchyClass.produce(new ReflectiveHierarchyBuildItem(Type
+              .create(DotName.createSimple(klass.getName()), Type.Kind.CLASS)));
         }
     }
 }
