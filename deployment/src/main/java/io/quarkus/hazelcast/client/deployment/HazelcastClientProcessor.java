@@ -233,8 +233,6 @@ class HazelcastClientProcessor {
           "com.sun.org.apache.xerces.internal.jaxp.datatype.DatatypeFactoryImpl"));
 
         bundles.produce(new NativeImageResourceBundleBuildItem(
-          "com.sun.org.apache.xml.internal.serializer.utils.SerializerMessages"));
-        bundles.produce(new NativeImageResourceBundleBuildItem(
           "com.sun.org.apache.xerces.internal.impl.msg.XMLMessages"));
         bundles.produce(new NativeImageResourceBundleBuildItem(
           "com.sun.org.apache.xerces.internal.impl.msg.XMLSchemaMessages"));
