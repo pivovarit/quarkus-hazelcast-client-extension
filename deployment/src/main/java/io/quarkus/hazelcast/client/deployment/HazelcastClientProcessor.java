@@ -87,7 +87,7 @@ class HazelcastClientProcessor {
 
     @BuildStep
     JaxbFileRootBuildItem enableJaxb() {
-        return new JaxbFileRootBuildItem("/");
+        return new JaxbFileRootBuildItem("com/hazelcast");
     }
 
     @BuildStep
