@@ -2,8 +2,6 @@ package io.quarkus.hazelcast.client;
 
 import com.hazelcast.client.config.ClientConfig;
 
-import java.net.InetSocketAddress;
-
 class HazelcastConfigurationParser {
 
     ClientConfig fromApplicationProperties(HazelcastClientConfig config, ClientConfig clientConfig) {
@@ -19,14 +17,18 @@ class HazelcastConfigurationParser {
     }
 
     private void setClusterAddress(ClientConfig clientConfig, HazelcastClientConfig config) {
-        for (InetSocketAddress clusterMember : config.clusterMembers) {
-            clientConfig.getNetworkConfig().addAddress(clusterMember.toString());
+        if (config.clusterMembers.isPresent()) {
+            for (String clusterMember : config.clusterMembers.get()) {
+                clientConfig.getNetworkConfig().addAddress(clusterMember);
+            }
         }
     }
 
     private void setLabels(ClientConfig clientConfig, HazelcastClientConfig config) {
-        for (String label : config.labels) {
-            clientConfig.addLabel(label);
+        if (config.labels.isPresent()) {
+            for (String label : config.labels.get()) {
+                clientConfig.addLabel(label);
+            }
         }
     }
 
@@ -38,14 +40,18 @@ class HazelcastConfigurationParser {
     }
 
     private void setOutboundPortDefinitions(ClientConfig clientConfig, HazelcastClientConfig config) {
-        for (String outboundPortDefinition : config.outboundPortDefinitions) {
-            clientConfig.getNetworkConfig().addOutboundPortDefinition(outboundPortDefinition);
+        if (config.outboundPortDefinitions.isPresent()) {
+            for (String outboundPortDefinition : config.outboundPortDefinitions.get()) {
+                clientConfig.getNetworkConfig().addOutboundPortDefinition(outboundPortDefinition);
+            }
         }
     }
 
     private void setOutboundPorts(ClientConfig clientConfig, HazelcastClientConfig config) {
-        for (Integer outboundPort : config.outboundPorts) {
-            clientConfig.getNetworkConfig().addOutboundPort(outboundPort);
+        if (config.outboundPorts.isPresent()) {
+            for (Integer outboundPort : config.outboundPorts.get()) {
+                clientConfig.getNetworkConfig().addOutboundPort(outboundPort);
+            }
         }
     }
 }
