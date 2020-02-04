@@ -1,15 +1,14 @@
 package io.quarkus.hazelcast.client;
 
+import java.net.Inet4Address;
+import java.util.List;
+import java.util.Optional;
+import java.util.OptionalInt;
+
 import io.quarkus.runtime.annotations.ConfigItem;
 import io.quarkus.runtime.annotations.ConfigPhase;
 import io.quarkus.runtime.annotations.ConfigRoot;
 
-import java.util.Optional;
-import java.util.OptionalInt;
-
-/**
- * @author Grzegorz Piwowarek
- */
 @ConfigRoot(name = "hazelcast-client", phase = ConfigPhase.RUN_TIME)
 public class HazelcastClientConfig {
 
@@ -17,31 +16,31 @@ public class HazelcastClientConfig {
      * Hazelcast Cluster address
      */
     @ConfigItem
-    public Optional<String> clusterMembers;
+    public List<Inet4Address> clusterMembers;
 
     /**
      * Hazelcast client label name
      */
     @ConfigItem
-    public Optional<String> labels;
+    public List<String> labels;
 
     /**
      * Hazelcast Cluster group name
      */
     @ConfigItem
-    public Optional<String> groupName;
+    public Optional<String> clusterName;
 
     /**
      * Outbound port
      */
     @ConfigItem
-    public Optional<String> outboundPorts;
+    public List<Integer> outboundPorts;
 
     /**
      * Outbound port definition
      */
     @ConfigItem
-    public Optional<String> outboundPortDefinitions;
+    public List<String> outboundPortDefinitions;
 
     /**
      * Connection attempt limit
