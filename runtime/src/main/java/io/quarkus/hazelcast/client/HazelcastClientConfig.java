@@ -5,6 +5,7 @@ import io.quarkus.runtime.annotations.ConfigPhase;
 import io.quarkus.runtime.annotations.ConfigRoot;
 
 import java.util.Optional;
+import java.util.OptionalInt;
 
 /**
  * @author Grzegorz Piwowarek
@@ -58,11 +59,11 @@ public class HazelcastClientConfig {
      * Connection timeout
      */
     @ConfigItem
-    public Optional<Integer> connectionTimeout;
+    public OptionalInt connectionTimeout;
 
     /**
      * Executor pool size
      */
     @ConfigItem
-    public Optional<Integer> executorPoolSize;
+    public OptionalInt executorPoolSize;
 }
