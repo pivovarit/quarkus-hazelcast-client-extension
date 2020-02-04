@@ -1,68 +1,56 @@
 package io.quarkus.hazelcast.client;
 
+import java.net.InetSocketAddress;
+import java.util.List;
+import java.util.Optional;
+import java.util.OptionalInt;
+
 import io.quarkus.runtime.annotations.ConfigItem;
 import io.quarkus.runtime.annotations.ConfigPhase;
 import io.quarkus.runtime.annotations.ConfigRoot;
 
-import java.util.Optional;
-
-/**
- * @author Grzegorz Piwowarek
- */
 @ConfigRoot(name = "hazelcast-client", phase = ConfigPhase.RUN_TIME)
 public class HazelcastClientConfig {
 
     /**
-     * Hazelcast Cluster address
+     * Hazelcast Cluster members
      */
     @ConfigItem
-    public Optional<String> clusterMembers;
+    public List<InetSocketAddress> clusterMembers;
 
     /**
-     * Hazelcast client label name
+     * Hazelcast client labels
      */
     @ConfigItem
-    public Optional<String> labels;
+    public List<String> labels;
 
     /**
      * Hazelcast Cluster group name
      */
     @ConfigItem
-    public Optional<String> groupName;
+    public Optional<String> clusterName;
 
     /**
-     * Outbound port
+     * Outbound ports
      */
     @ConfigItem
-    public Optional<String> outboundPorts;
+    public List<Integer> outboundPorts;
 
     /**
-     * Outbound port definition
+     * Outbound port definitions
      */
     @ConfigItem
-    public Optional<String> outboundPortDefinitions;
-
-    /**
-     * Connection attempt limit
-     */
-    @ConfigItem
-    public Optional<Integer> connectionAttemptLimit;
-
-    /**
-     * Connection attempt period
-     */
-    @ConfigItem
-    public Optional<Integer> connectionAttemptPeriod;
+    public List<String> outboundPortDefinitions;
 
     /**
      * Connection timeout
      */
     @ConfigItem
-    public Optional<Integer> connectionTimeout;
+    public OptionalInt connectionTimeout;
 
     /**
      * Executor pool size
      */
     @ConfigItem
-    public Optional<Integer> executorPoolSize;
+    public OptionalInt executorPoolSize;
 }

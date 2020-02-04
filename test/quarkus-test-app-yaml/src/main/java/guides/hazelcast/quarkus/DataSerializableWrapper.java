@@ -1,10 +1,11 @@
 package guides.hazelcast.quarkus;
 
+import java.io.IOException;
+
 import com.hazelcast.nio.ObjectDataInput;
 import com.hazelcast.nio.ObjectDataOutput;
+import com.hazelcast.nio.serialization.DataSerializableFactory;
 import com.hazelcast.nio.serialization.IdentifiedDataSerializable;
-
-import java.io.IOException;
 
 public class DataSerializableWrapper implements IdentifiedDataSerializable {
     private String value;
@@ -36,7 +37,7 @@ public class DataSerializableWrapper implements IdentifiedDataSerializable {
     }
 
     @Override
-    public int getId() {
+    public int getClassId() {
         return 42;
     }
 }
