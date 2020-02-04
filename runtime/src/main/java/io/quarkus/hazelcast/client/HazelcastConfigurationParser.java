@@ -2,57 +2,50 @@ package io.quarkus.hazelcast.client;
 
 import com.hazelcast.client.config.ClientConfig;
 
-import java.util.Arrays;
-import java.util.stream.Stream;
+import java.net.InetSocketAddress;
 
-/**
- * @author Grzegorz Piwowarek
- */
 class HazelcastConfigurationParser {
 
     ClientConfig fromApplicationProperties(HazelcastClientConfig config, ClientConfig clientConfig) {
         setClusterAddress(clientConfig, config);
-        setGroupName(clientConfig, config);
         setLabels(clientConfig, config);
 
         setOutboundPorts(clientConfig, config);
         setOutboundPortDefinitions(clientConfig, config);
 
         setConnectionTimeout(clientConfig, config);
+
         return clientConfig;
     }
 
     private void setClusterAddress(ClientConfig clientConfig, HazelcastClientConfig config) {
-        config.clusterMembers
-          .ifPresent(members -> clientConfig.getNetworkConfig().addAddress(members.split(",")));
-    }
-
-    private void setGroupName(ClientConfig clientConfig, HazelcastClientConfig config) {
-        config.clusterName
-          .filter(s -> !s.isEmpty())
-          .ifPresent(clientConfig::setClusterName);
+        for (InetSocketAddress clusterMember : config.clusterMembers) {
+            clientConfig.getNetworkConfig().addAddress(clusterMember.toString());
+        }
     }
 
     private void setLabels(ClientConfig clientConfig, HazelcastClientConfig config) {
-        config.labels
-          .map(s -> Arrays.stream(s.split(","))).orElseGet(Stream::empty)
-          .forEach(clientConfig::addLabel);
+        for (String label : config.labels) {
+            clientConfig.addLabel(label);
+        }
     }
 
     private void setConnectionTimeout(ClientConfig clientConfig, HazelcastClientConfig config) {
-        config.connectionTimeout
-          .ifPresent(timeout -> clientConfig.getNetworkConfig().setConnectionTimeout(timeout));
+        if (config.connectionTimeout.isPresent()) {
+            int timeout = config.connectionTimeout.getAsInt();
+            clientConfig.getNetworkConfig().setConnectionTimeout(timeout);
+        }
     }
 
     private void setOutboundPortDefinitions(ClientConfig clientConfig, HazelcastClientConfig config) {
-        config.outboundPortDefinitions
-          .map(str -> Arrays.stream(str.split(","))).orElseGet(Stream::empty)
-          .forEach(definition -> clientConfig.getNetworkConfig().addOutboundPortDefinition(definition));
+        for (String outboundPortDefinition : config.outboundPortDefinitions) {
+            clientConfig.getNetworkConfig().addOutboundPortDefinition(outboundPortDefinition);
+        }
     }
 
     private void setOutboundPorts(ClientConfig clientConfig, HazelcastClientConfig config) {
-        config.outboundPorts
-          .map(str -> Arrays.stream(str.split(","))).orElseGet(Stream::empty)
-          .forEach(port -> clientConfig.getNetworkConfig().addOutboundPort(Integer.parseInt(port)));
+        for (Integer outboundPort : config.outboundPorts) {
+            clientConfig.getNetworkConfig().addOutboundPort(outboundPort);
+        }
     }
 }
