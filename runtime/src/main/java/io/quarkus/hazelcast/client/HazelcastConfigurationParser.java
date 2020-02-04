@@ -19,8 +19,8 @@ class HazelcastConfigurationParser {
     }
 
     private void setClusterAddress(ClientConfig clientConfig, HazelcastClientConfig config) {
-        for (Inet4Address clusterMember : config.clusterMembers) {
-            clientConfig.getNetworkConfig().addAddress(clusterMember.toString());
+        for (String clusterMember : config.clusterMembers) {
+            clientConfig.getNetworkConfig().addAddress(clusterMember);
         }
     }
 
