@@ -1,6 +1,7 @@
 package io.quarkus.hazelcast.client;
 
 import com.hazelcast.client.HazelcastClient;
+import com.hazelcast.core.Hazelcast;
 import com.hazelcast.core.HazelcastInstance;
 import io.quarkus.arc.DefaultBean;
 
@@ -16,6 +17,7 @@ import static com.hazelcast.client.HazelcastClient.newHazelcastClient;
  */
 @ApplicationScoped
 public class HazelcastClientProducer {
+
     HazelcastClientConfig config;
 
     @Produces

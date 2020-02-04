@@ -1,26 +1,30 @@
 package io.quarkus.hazelcast.client.deployment;
 
-import com.hazelcast.aws.AwsDiscoveryStrategy;
-import com.hazelcast.aws.AwsDiscoveryStrategyFactory;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Set;
+import java.util.stream.IntStream;
+
+import org.jboss.jandex.DotName;
+import org.jboss.jandex.Type;
+
 import com.hazelcast.client.cache.impl.HazelcastClientCachingProvider;
 import com.hazelcast.client.impl.ClientExtension;
-import com.hazelcast.client.impl.proxy.ClientReliableTopicProxy;
 import com.hazelcast.client.impl.spi.ClientProxyFactory;
 import com.hazelcast.cluster.MembershipListener;
 import com.hazelcast.collection.ItemListener;
+import com.hazelcast.com.fasterxml.jackson.core.JsonFactory;
 import com.hazelcast.config.EventJournalConfig;
 import com.hazelcast.config.MerkleTreeConfig;
 import com.hazelcast.config.replacer.EncryptionReplacer;
 import com.hazelcast.config.replacer.PropertyReplacer;
 import com.hazelcast.config.replacer.spi.ConfigReplacer;
-import com.hazelcast.config.security.StaticCredentialsFactory;
 import com.hazelcast.core.EntryListener;
-import com.hazelcast.gcp.GcpDiscoveryStrategy;
-import com.hazelcast.gcp.GcpDiscoveryStrategyFactory;
 import com.hazelcast.internal.config.DomConfigHelper;
 import com.hazelcast.internal.util.ConcurrencyUtil;
 import com.hazelcast.internal.util.ICMPHelper;
 import com.hazelcast.map.listener.MapListener;
+import com.hazelcast.nio.SocketInterceptor;
 import com.hazelcast.nio.serialization.DataSerializable;
 import com.hazelcast.nio.serialization.DataSerializableFactory;
 import com.hazelcast.nio.serialization.PortableFactory;
@@ -31,85 +35,45 @@ import com.hazelcast.spi.discovery.DiscoveryStrategy;
 import com.hazelcast.spi.discovery.DiscoveryStrategyFactory;
 import com.hazelcast.spi.discovery.NodeFilter;
 import com.hazelcast.spi.discovery.multicast.MulticastDiscoveryStrategy;
-import com.hazelcast.spi.impl.AbstractInvocationFuture;
-import com.hazelcast.spi.impl.InternalCompletableFuture;
 import com.hazelcast.topic.MessageListener;
+
 import io.quarkus.arc.deployment.AdditionalBeanBuildItem;
 import io.quarkus.deployment.annotations.BuildProducer;
 import io.quarkus.deployment.annotations.BuildStep;
 import io.quarkus.deployment.annotations.ExecutionTime;
 import io.quarkus.deployment.annotations.Record;
-import io.quarkus.deployment.builditem.CombinedIndexBuildItem;
 import io.quarkus.deployment.builditem.ExtensionSslNativeSupportBuildItem;
 import io.quarkus.deployment.builditem.FeatureBuildItem;
-import io.quarkus.deployment.builditem.JniBuildItem;
 import io.quarkus.deployment.builditem.nativeimage.NativeImageResourceBuildItem;
-import io.quarkus.deployment.builditem.nativeimage.NativeImageResourceBundleBuildItem;
 import io.quarkus.deployment.builditem.nativeimage.ReflectiveClassBuildItem;
 import io.quarkus.deployment.builditem.nativeimage.ReflectiveHierarchyBuildItem;
-import io.quarkus.deployment.builditem.nativeimage.RuntimeInitializedClassBuildItem;
 import io.quarkus.deployment.builditem.nativeimage.RuntimeReinitializedClassBuildItem;
 import io.quarkus.deployment.builditem.nativeimage.ServiceProviderBuildItem;
 import io.quarkus.deployment.util.ServiceUtil;
 import io.quarkus.hazelcast.client.HazelcastClientBytecodeRecorder;
 import io.quarkus.hazelcast.client.HazelcastClientConfig;
 import io.quarkus.hazelcast.client.HazelcastClientProducer;
-import org.jboss.jandex.DotName;
-import org.jboss.jandex.Type;
-
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Set;
-import java.util.stream.IntStream;
 
 /**
  * @author Grzegorz Piwowarek
  */
 class HazelcastClientProcessor {
 
-    private static final String FEATURE = "hazelcast-client";
-
-    CombinedIndexBuildItem buildIndex;
-
-    BuildProducer<ReflectiveClassBuildItem> reflectiveClasses;
-    BuildProducer<NativeImageResourceBuildItem> resources;
-    BuildProducer<ReflectiveHierarchyBuildItem> reflectiveClassHierarchies;
-    BuildProducer<NativeImageResourceBundleBuildItem> bundles;
-    BuildProducer<RuntimeReinitializedClassBuildItem> reinitializedClasses;
-    BuildProducer<RuntimeInitializedClassBuildItem> runtimeInitializedClasses;
-    BuildProducer<ServiceProviderBuildItem> services;
-
     @BuildStep
     FeatureBuildItem feature() {
-        return new FeatureBuildItem(FEATURE);
+        return new FeatureBuildItem("hazelcast-client");
     }
 
     @BuildStep
     void enableSSL(BuildProducer<ExtensionSslNativeSupportBuildItem> ssl) {
-        ssl.produce(new ExtensionSslNativeSupportBuildItem(FEATURE));
+        ssl.produce(new ExtensionSslNativeSupportBuildItem("hazelcast-client"));
     }
 
     @BuildStep
-    void enableJNI(BuildProducer<JniBuildItem> jni) {
-        jni.produce(new JniBuildItem());
-    }
-
-    @BuildStep
-    void configureNativeImageGeneration() throws IOException {
-        registerConfigurationFiles();
-        registerXMLParsingUtilities();
-        registerReflectivelyCreatedClasses();
-        registerICMPHelper();
-        registerUserImplementationsOfSerializableUtilities();
-        registerSSLUtilities();
-        registerCustomCredentialFactories();
-        registerCustomDiscoveryStrategiesClasses();
-        registerCustomConfigReplacerClasses();
-        registerCustomImplementationClasses();
-        registerServiceProviders(DiscoveryStrategyFactory.class);
-        registerServiceProviders(ClientExtension.class);
-        registerServiceProviders(com.hazelcast.com.fasterxml.jackson.core.JsonFactory.class);
-        reinitializeCommonFJP();
+    void registerServiceProviders(BuildProducer<ServiceProviderBuildItem> services) throws IOException {
+        registerServiceProviders(DiscoveryStrategyFactory.class, services);
+        registerServiceProviders(ClientExtension.class, services);
+        registerServiceProviders(JsonFactory.class, services);
     }
 
     @BuildStep
@@ -119,12 +83,14 @@ class HazelcastClientProcessor {
 
     @BuildStep
     @Record(ExecutionTime.RUNTIME_INIT)
-    HazelcastClientConfiguredBuildItem resolveClientProperties(HazelcastClientBytecodeRecorder recorder, HazelcastClientConfig config) {
+    HazelcastClientConfiguredBuildItem resolveClientProperties(HazelcastClientBytecodeRecorder recorder,
+                                                               HazelcastClientConfig config) {
         recorder.configureRuntimeProperties(config);
         return new HazelcastClientConfiguredBuildItem();
     }
 
-    private void registerConfigurationFiles() {
+    @BuildStep
+    void registerConfigurationFiles(BuildProducer<NativeImageResourceBuildItem> resources) {
         resources.produce(new NativeImageResourceBuildItem(
           "hazelcast-client.yml",
           "hazelcast-client-default.xml",
@@ -132,31 +98,39 @@ class HazelcastClientProcessor {
           "hazelcast-client.xml"));
     }
 
-    private void registerReflectivelyCreatedClasses() {
-        reflectiveClasses.produce(new ReflectiveClassBuildItem(true, true,
+    @BuildStep
+    void reinitializeCommonFJP(BuildProducer<RuntimeReinitializedClassBuildItem> reinitializedClasses) {
+        // TODO remove after migrating to GraalVM 19.3.1 (deferred ForkJoinPool.commonPool())
+        reinitializedClasses.produce(new RuntimeReinitializedClassBuildItem(ConcurrencyUtil.class.getName()));
+    }
+
+    @BuildStep
+    void registerReflectivelyCreatedClasses(BuildProducer<ReflectiveClassBuildItem> reflectiveClasses) {
+        reflectiveClasses.produce(new ReflectiveClassBuildItem(false, false,
           HazelcastClientCachingProvider.class,
           DomConfigHelper.class,
           EventJournalConfig.class,
           MerkleTreeConfig.class));
     }
 
-    private void registerCustomImplementationClasses() {
+    @BuildStep
+    void registerCustomImplementationClasses(BuildProducer<ReflectiveHierarchyBuildItem> reflectiveClassHierarchies) {
 
         registerTypeHierarchy(reflectiveClassHierarchies,
-          com.hazelcast.nio.SocketInterceptor.class,
+          SocketInterceptor.class,
           MembershipListener.class,
           MigrationListener.class,
           EntryListener.class,
           MessageListener.class,
           ItemListener.class,
           MapListener.class,
-          ClientExtension.class,
+          com.hazelcast.client.impl.ClientExtension.class,
           ClientProxyFactory.class);
-
-        registerTypeHierarchy(reflectiveClassHierarchies);
     }
 
-    private void registerCustomConfigReplacerClasses() {
+    @BuildStep
+    void registerCustomConfigReplacerClasses(BuildProducer<ReflectiveClassBuildItem> reflectiveClasses,
+                                             BuildProducer<ReflectiveHierarchyBuildItem> reflectiveClassHierarchies) {
 
         registerTypeHierarchy(reflectiveClassHierarchies, ConfigReplacer.class);
         reflectiveClasses.produce(new ReflectiveClassBuildItem(false, false,
@@ -164,43 +138,48 @@ class HazelcastClientProcessor {
           PropertyReplacer.class));
     }
 
-    private void registerCustomDiscoveryStrategiesClasses() {
+    @BuildStep
+    void registerCustomDiscoveryStrategiesClasses(BuildProducer<ReflectiveClassBuildItem> reflectiveClasses,
+                                                  BuildProducer<ReflectiveHierarchyBuildItem> reflectiveClassHierarchies) {
 
         registerTypeHierarchy(reflectiveClassHierarchies,
           DiscoveryStrategy.class,
           NodeFilter.class);
 
+        reflectiveClasses.produce(new ReflectiveClassBuildItem(false, false, MulticastDiscoveryStrategy.class));
         reflectiveClasses.produce(new ReflectiveClassBuildItem(false, false,
-          MulticastDiscoveryStrategy.class,
-          AwsDiscoveryStrategy.class,
-          AwsDiscoveryStrategyFactory.class,
-          GcpDiscoveryStrategy.class,
-          GcpDiscoveryStrategyFactory.class));
+          "com.hazelcast.aws.AwsDiscoveryStrategy",
+          "com.hazelcast.aws.AwsDiscoveryStrategyFactory",
+          "com.hazelcast.gcp.GcpDiscoveryStrategy",
+          "com.hazelcast.gcp.GcpDiscoveryStrategyFactory"));
 
         reflectiveClasses.produce(new ReflectiveClassBuildItem(false, false,
           "com.hazelcast.kubernetes.HazelcastKubernetesDiscoveryStrategyFactory",
           "com.hazelcast.kubernetes.HazelcastKubernetesDiscoveryStrategy"));
     }
 
-    void registerServiceProviders(Class<?> klass) throws IOException {
+    void registerServiceProviders(Class<?> klass, BuildProducer<ServiceProviderBuildItem> services) throws IOException {
         String service = "META-INF/services/" + klass.getName();
 
-        Set<String> implementations = ServiceUtil
-          .classNamesNamedIn(Thread.currentThread().getContextClassLoader(), service);
+        Set<String> implementations = ServiceUtil.classNamesNamedIn(Thread.currentThread().getContextClassLoader(), service);
 
         services.produce(new ServiceProviderBuildItem(klass.getName(), new ArrayList<>(implementations)));
     }
 
-    private void registerCustomCredentialFactories() {
+    @BuildStep
+    void registerCustomCredentialFactories(BuildProducer<ReflectiveClassBuildItem> reflectiveClasses,
+                                           BuildProducer<ReflectiveHierarchyBuildItem> reflectiveClassHierarchies) {
         registerTypeHierarchy(
           reflectiveClassHierarchies,
           com.hazelcast.security.ICredentialsFactory.class);
 
         reflectiveClasses.produce(
-          new ReflectiveClassBuildItem(false, false, StaticCredentialsFactory.class));
+          new ReflectiveClassBuildItem(false, false, com.hazelcast.config.security.StaticCredentialsFactory.class));
     }
 
-    private void registerSSLUtilities() {
+    @BuildStep
+    void registerSSLUtilities(BuildProducer<ReflectiveClassBuildItem> reflectiveClasses,
+                              BuildProducer<ReflectiveHierarchyBuildItem> reflectiveClassHierarchies) {
 
         registerTypeHierarchy(
           reflectiveClassHierarchies,
@@ -209,7 +188,9 @@ class HazelcastClientProcessor {
           new ReflectiveClassBuildItem(false, false, BasicSSLContextFactory.class));
     }
 
-    private void registerUserImplementationsOfSerializableUtilities() {
+    @BuildStep
+    void registerUserImplementationsOfSerializableUtilities(
+      BuildProducer<ReflectiveHierarchyBuildItem> reflectiveClassHierarchies) {
         registerTypeHierarchy(reflectiveClassHierarchies,
           DataSerializable.class,
           DataSerializableFactory.class,
@@ -217,42 +198,17 @@ class HazelcastClientProcessor {
           Serializer.class);
     }
 
-    private void registerICMPHelper() {
+    @BuildStep
+    void registerICMPHelper(BuildProducer<NativeImageResourceBuildItem> resources,
+                            BuildProducer<RuntimeReinitializedClassBuildItem> reinitializedClasses) {
         resources.produce(new NativeImageResourceBuildItem(
           "lib/linux-x86/libicmp_helper.so",
           "lib/linux-x86_64/libicmp_helper.so"));
         reinitializedClasses.produce(new RuntimeReinitializedClassBuildItem(ICMPHelper.class.getName()));
     }
 
-    private void reinitializeCommonFJP() {
-        // TODO remove after migrating to GraalVM 19.3.1 (deferred ForkJoinPool.commonPool())
-        reinitializedClasses.produce(new RuntimeReinitializedClassBuildItem(ConcurrencyUtil.class.getName()));
-    }
-
-    private void registerXMLParsingUtilities() {
-        reflectiveClasses.produce(new ReflectiveClassBuildItem(false, false,
-          "com.sun.org.apache.xerces.internal.jaxp.DocumentBuilderFactoryImpl",
-          "com.sun.org.apache.xerces.internal.jaxp.SAXParserFactoryImpl",
-          "com.sun.xml.bind.v2.ContextFactory",
-          "com.sun.xml.internal.stream.XMLInputFactoryImpl",
-          "com.sun.org.apache.xpath.internal.functions.FuncNot",
-          "com.sun.xml.internal.bind.v2.ContextFactory",
-          "com.sun.org.apache.xalan.internal.xsltc.trax.TransformerFactoryImpl",
-          "com.sun.org.apache.xerces.internal.impl.dv.xs.SchemaDVFactoryImpl",
-          "com.sun.org.apache.xerces.internal.jaxp.datatype.DatatypeFactoryImpl"));
-
-        bundles.produce(new NativeImageResourceBundleBuildItem(
-          "com.sun.org.apache.xml.internal.serializer.utils.SerializerMessages"));
-        bundles.produce(new NativeImageResourceBundleBuildItem(
-          "com.sun.org.apache.xerces.internal.impl.msg.XMLMessages"));
-        bundles.produce(new NativeImageResourceBundleBuildItem(
-          "com.sun.org.apache.xerces.internal.impl.msg.XMLSchemaMessages"));
-        bundles.produce(new NativeImageResourceBundleBuildItem(
-          "com.sun.org.apache.xerces.internal.impl.xpath.regex.message"));
-
-        resources.produce(new NativeImageResourceBuildItem(
-          "com/sun/org/apache/xml/internal/serializer/output_xml.properties"));
-
+    @BuildStep
+    void registerXMLParsingUtilities(BuildProducer<NativeImageResourceBuildItem> resources) {
         IntStream.rangeClosed(1, 12).boxed().map(i -> String.format("hazelcast-client-config-3.%d.xsd", i))
           .forEach(resource -> resources.produce(new NativeImageResourceBuildItem(resource)));
         resources.produce(new NativeImageResourceBuildItem("hazelcast-client-config-4.0.xsd"));
@@ -263,8 +219,8 @@ class HazelcastClientProcessor {
       Class<?>... classNames) {
 
         for (Class<?> klass : classNames) {
-            reflectiveHierarchyClass.produce(new ReflectiveHierarchyBuildItem(Type
-              .create(DotName.createSimple(klass.getName()), Type.Kind.CLASS)));
+            reflectiveHierarchyClass.produce(
+              new ReflectiveHierarchyBuildItem(Type.create(DotName.createSimple(klass.getName()), Type.Kind.CLASS)));
         }
     }
 }
