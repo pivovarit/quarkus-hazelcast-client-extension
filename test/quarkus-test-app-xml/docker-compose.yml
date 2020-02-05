@@ -3,11 +3,11 @@ version: '3.7'
 services:
   member1:
     container_name: member1
-    image: hazelcast/hazelcast:latest
+    image: hazelcast/hazelcast:hazelcast:4.0-BETA-2
 
   member2:
     container_name: member2
-    image: hazelcast/hazelcast:latest
+    image: hazelcast/hazelcast:hazelcast:4.0-BETA-2
 
   hazelcast-quarkus1:
     container_name: hazelcast-quarkus1

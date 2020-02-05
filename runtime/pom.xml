@@ -26,8 +26,8 @@
         </dependency>
         <dependency>
             <groupId>com.hazelcast</groupId>
-            <artifactId>hazelcast-all</artifactId>
-            <version>4.1-SNAPSHOT</version>
+            <artifactId>hazelcast</artifactId>
+            <version>4.0</version>
         </dependency>
         <dependency>
             <groupId>javax.cache</groupId>
